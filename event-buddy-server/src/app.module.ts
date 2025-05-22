@@ -7,6 +7,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { BookingModule } from './booking/booking.module';
 import { UserModule } from './user/user.module';
 import { RoleModule } from './role/role.module';
+import { Event } from './event/entities/event.entity';
+import { Booking } from './booking/entities/booking.entity';
+import { Role } from './role/entities/role.entity';
+import { User } from './user/entities/user.entity';
 
 @Module({
   imports: [
@@ -26,7 +30,7 @@ import { RoleModule } from './role/role.module';
         username: config.get<string>('DB_USERNAME'),
         password: config.get<string>('DB_PASSWORD'),
         database: config.get<string>('DB_NAME'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        entities: [Event, Booking, Role, User],
         synchronize: true,
       }),
     }),

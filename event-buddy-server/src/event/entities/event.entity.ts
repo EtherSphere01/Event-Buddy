@@ -27,11 +27,11 @@ export class Event {
   @Column({ type: 'int', nullable: false })
   total_booked: number;
 
-  @Column({ type: 'bytea', nullable: true })
-  image: Buffer;
+  @Column({ nullable: false })
+  image_path: string;
 
   @Column({ type: 'simple-array', nullable: true })
-  tags: string[];
+  tags?: string[];
 
   @OneToMany(() => Booking, (booking) => booking.event)
   bookings: Booking[];

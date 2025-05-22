@@ -13,8 +13,11 @@ export class Booking {
   @PrimaryGeneratedColumn()
   booking_id: number;
 
+  @Column({ type: 'int', nullable: false })
+  seat_booked: number;
+
   @ManyToOne(() => User, (user) => user.bookings)
-  @JoinColumn({ name: 'user_email', referencedColumnName: 'email' })
+  @JoinColumn({ name: 'email', referencedColumnName: 'email' })
   user: User;
 
   @ManyToOne(() => Event, (event) => event.bookings)
