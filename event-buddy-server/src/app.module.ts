@@ -11,6 +11,10 @@ import { Event } from './event/entities/event.entity';
 import { Booking } from './booking/entities/booking.entity';
 import { Role } from './role/entities/role.entity';
 import { User } from './user/entities/user.entity';
+import { PassHashingModule } from './pass-hashing/pass-hashing.module';
+import { AuthModule } from './auth/auth.module';
+import jwtConfig from './auth/config/jwt.config';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -18,6 +22,9 @@ import { User } from './user/entities/user.entity';
       isGlobal: true,
       envFilePath: ['.env.db'],
     }),
+
+    ConfigModule.forFeature(jwtConfig),
+    JwtModule.registerAsync(jwtConfig.asProvider()),
 
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -41,6 +48,10 @@ import { User } from './user/entities/user.entity';
     RoleModule,
 
     EventModule,
+
+    PassHashingModule,
+
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

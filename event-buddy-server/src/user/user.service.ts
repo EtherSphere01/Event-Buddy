@@ -10,6 +10,7 @@ import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from 'src/role/entities/role.entity';
+import { passHashingProvider } from 'src/pass-hashing/pass-hashing.provider';
 
 @Injectable()
 export class UserService {
@@ -19,6 +20,8 @@ export class UserService {
 
     @InjectRepository(Role)
     private readonly roleRepo: Repository<Role>,
+
+    private readonly passHashing: passHashingProvider,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -47,6 +50,10 @@ export class UserService {
           `User with email ${createUserDto.email} already exists`,
         );
       }
+
+      createUserDto.password = await this.passHashing.hashPassword(
+        createUserDto.password,
+      );
 
       const user = this.userRepo.create({
         ...createUserDto,
@@ -106,10 +113,30 @@ export class UserService {
         throw new NotFoundException(`User with id ${id} not found`);
       }
 
-      Object.assign(user, updateUserDto);
+      const isMatch = await this.passHashing.comparePassword(
+        updateUserDto.password,
+        user.password,
+      );
+
+      if (!isMatch) {
+        throw new BadRequestException('Incorrect current password');
+      }
+
+      if (updateUserDto.new_password) {
+        user.password = await this.passHashing.hashPassword(
+          updateUserDto.new_password,
+        );
+      }
+
+      const { password, new_password, ...otherUpdates } = updateUserDto;
+      Object.assign(user, otherUpdates);
+
       return await this.userRepo.save(user);
     } catch (error) {
-      if (error instanceof NotFoundException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
       throw new InternalServerErrorException(
