@@ -1,10 +1,15 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { Event } from './entities/event.entity';
 import { json } from 'stream/consumers';
 import { Booking } from 'src/booking/entities/booking.entity';
@@ -57,7 +62,9 @@ export class EventService {
     try {
       return await this.eventRepository.save(event);
     } catch (error) {
-      throw new BadRequestException('Error creating event: ' + error.message);
+      throw new InternalServerErrorException(
+        'Error creating event: ' + error.message,
+      );
     }
   }
 
@@ -65,12 +72,16 @@ export class EventService {
     try {
       const events = this.eventRepository.find();
       if (!events) {
-        const message = 'No events found';
-        return { message };
+        throw new NotFoundException('No events found');
       }
       return events;
     } catch (error) {
-      throw new BadRequestException('Error fetching events: ' + error.message);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Error fetching events: ' + error.message,
+      );
     }
   }
 
@@ -80,33 +91,44 @@ export class EventService {
         where: { event_id: id },
       });
       if (!event) {
-        const message = `Event with ID ${id} not found`;
-        return { message };
+        throw new NotFoundException(`Event with ID ${id} not found`);
       }
       return event;
     } catch (error) {
-      throw new BadRequestException('Error fetching event: ' + error.message);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Error fetching event: ' + error.message,
+      );
     }
   }
 
   async update(id: number, updateEventDto: UpdateEventDto) {
-    const event = await this.eventRepository.findOne({
-      where: { event_id: id },
-    });
-    if (!event) {
-      const message = `Event with ID ${id} not found`;
-      return { message };
-    }
+    try {
+      const event = await this.eventRepository.findOne({
+        where: { event_id: id },
+      });
+      if (!event) {
+        throw new NotFoundException(`Event with ID ${id} not found`);
+      }
 
-    const updatedEvent = Object.assign(event, updateEventDto);
-    return await this.eventRepository.save(updatedEvent);
+      const updatedEvent = Object.assign(event, updateEventDto);
+      return await this.eventRepository.save(updatedEvent);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Error updating event: ' + error.message,
+      );
+    }
   }
 
   async remove(id: number) {
     const event = await this.eventRepository.findOneBy({ event_id: id });
     if (!event) {
-      const message = `Event with ID ${id} not found`;
-      return { message };
+      throw new NotFoundException(`Event with ID ${id} not found`);
     }
 
     try {
@@ -121,10 +143,12 @@ export class EventService {
 
       return { message: `Event #${id} deleted successfully` };
     } catch (error) {
-      console.error('Error deleting event:', error);
-      throw new BadRequestException({
-        message: `Error deleting event: ${error.message}`,
-      });
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        'Error deleting event: ' + error.message,
+      );
     }
   }
 }

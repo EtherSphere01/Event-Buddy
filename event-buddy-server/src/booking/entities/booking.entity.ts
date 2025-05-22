@@ -23,7 +23,7 @@ export class Booking {
     nullable: true,
     onDelete: 'SET NULL',
   })
-  @JoinColumn({ name: 'email', referencedColumnName: 'email' })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'user_id' })
   user: User;
 
   @ManyToOne(() => Event, (event) => event.bookings, {

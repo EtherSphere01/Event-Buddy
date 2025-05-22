@@ -5,11 +5,13 @@ import {
   IsDateString,
   IsOptional,
   IsArray,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateEventDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(255)
   title: string;
 
   @IsDateString()
@@ -22,6 +24,7 @@ export class CreateEventDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(255)
   location: string;
 
   @IsInt()

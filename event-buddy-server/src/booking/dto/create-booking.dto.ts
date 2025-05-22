@@ -7,12 +7,13 @@ import {
   IsOptional,
   IsString,
   IsNotEmpty,
+  MaxLength,
 } from 'class-validator';
 
 export class CreateBookingDto {
-  @IsEmail()
+  @IsInt()
   @IsNotEmpty()
-  email: string;
+  user_id: number;
 
   @IsInt()
   @IsNotEmpty()
@@ -20,6 +21,7 @@ export class CreateBookingDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(30)
   status?: string;
 
   @IsInt()

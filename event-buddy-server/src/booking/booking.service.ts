@@ -3,6 +3,8 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
+  HttpCode,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -25,23 +27,22 @@ export class BookingService {
 
   async create(createBookingDto: CreateBookingDto) {
     try {
-      const { email, event_id, seat_booked } = createBookingDto;
+      const { user_id, event_id, seat_booked } = createBookingDto;
 
-      const user = await this.userRepo.findOneBy({ email: email });
+      const user = await this.userRepo.findOneBy({ user_id: +user_id });
       if (!user) {
-        const message = `User with email ${email} not found`;
-        return { message };
+        throw new NotFoundException(`User with ID ${user_id} not found`);
       }
 
       const event = await this.eventRepo.findOneBy({ event_id: event_id });
       if (!event) {
-        const message = `Event with id ${event_id} not found`;
-        return { message };
+        throw new NotFoundException(`Event with ID ${event_id} not found`);
       }
 
       if (seat_booked > event.available_seats) {
-        const message = `Not enough seats available. Only ${event.available_seats} left.`;
-        return { message };
+        throw new BadRequestException(
+          `Not enough seats available. Available: ${event.available_seats}, Requested: ${seat_booked}`,
+        );
       }
 
       const booking = this.bookingRepo.create({
@@ -54,9 +55,21 @@ export class BookingService {
       event.total_booked += seat_booked;
 
       await this.eventRepo.save(event);
-      return this.bookingRepo.save(booking);
+      const savedBooking = this.bookingRepo.save(booking);
+      return {
+        createBookingDto,
+        event,
+      };
     } catch (error) {
-      return { message: 'Failed to create booking', error: error.message };
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException({
+        message: 'Failed to create booking',
+        error: error.message,
+      });
     }
   }
 
@@ -77,15 +90,14 @@ export class BookingService {
         relations: ['event'],
       });
       if (!booking) {
-        const message = `Booking #${id} not found`;
-        return { message };
+        throw new NotFoundException(`Booking with ID ${id} not found`);
       }
       return booking;
     } catch (error) {
-      return {
-        message: `Failed to fetch booking #${id}`,
-        error: error.message,
-      };
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to update user');
     }
   }
 
@@ -96,15 +108,15 @@ export class BookingService {
         relations: ['event'],
       });
       if (!booking) {
-        const message = `Booking #${id} not found`;
-        return { message };
+        throw new NotFoundException(`Booking with ID ${id} not found`);
       }
 
       if (updateBookingDto.seat_booked) {
         const seatDiff = updateBookingDto.seat_booked - booking.seat_booked;
         if (seatDiff > booking.event.available_seats) {
-          const message = `Not enough seats available to update booking`;
-          return { message };
+          throw new BadRequestException(
+            `Not enough seats available. Available: ${booking.event.available_seats}, Requested: ${seatDiff}`,
+          );
         }
 
         booking.event.available_seats -= seatDiff;
@@ -124,10 +136,15 @@ export class BookingService {
       Object.assign(booking, updateBookingDto);
       return this.bookingRepo.save(booking);
     } catch (error) {
-      return {
-        message: `Failed to update booking #${id}`,
+      if (error instanceof NotFoundException) {
+        throw error;
+      } else if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException({
+        message: 'Failed to update booking',
         error: error.message,
-      };
+      });
     }
   }
 
@@ -138,8 +155,7 @@ export class BookingService {
         relations: ['event'],
       });
       if (!booking) {
-        const message = `Booking #${id} not found`;
-        return { message };
+        throw new NotFoundException(`Booking with ID ${id} not found`);
       }
 
       if (booking.event != null) {
@@ -160,10 +176,13 @@ export class BookingService {
       await this.bookingRepo.remove(booking);
       return { deleted: true, message: `Booking #${id} deleted successfully` };
     } catch (error) {
-      return {
-        message: `Failed to delete booking #${id}`,
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException({
+        message: 'Failed to delete booking',
         error: error.message,
-      };
+      });
     }
   }
 }
