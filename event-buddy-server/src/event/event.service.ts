@@ -7,12 +7,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Event } from './entities/event.entity';
 import { json } from 'stream/consumers';
+import { Booking } from 'src/booking/entities/booking.entity';
 
 @Injectable()
 export class EventService {
   constructor(
     @InjectRepository(Event)
     private readonly eventRepository: Repository<Event>,
+    @InjectRepository(Booking)
+    private readonly bookingRepo: Repository<Booking>,
   ) {}
 
   async create(createEventDto: CreateEventDto) {
@@ -95,24 +98,33 @@ export class EventService {
       return { message };
     }
 
-    const updatedEvent = this.eventRepository.merge(event, updateEventDto);
+    const updatedEvent = Object.assign(event, updateEventDto);
     return await this.eventRepository.save(updatedEvent);
   }
 
   async remove(id: number) {
-    const event = await this.eventRepository.findOne({
-      where: { event_id: id },
-    });
+    const event = await this.eventRepository.findOneBy({ event_id: id });
     if (!event) {
       const message = `Event with ID ${id} not found`;
       return { message };
     }
 
     try {
+      await this.bookingRepo
+        .createQueryBuilder()
+        .update('bookings')
+        .set({ event: null })
+        .where('event_id = :id', { id })
+        .execute();
+
       await this.eventRepository.remove(event);
-      return { message: 'Event deleted successfully' };
+
+      return { message: `Event #${id} deleted successfully` };
     } catch (error) {
-      throw new BadRequestException('Error deleting event: ' + error.message);
+      console.error('Error deleting event:', error);
+      throw new BadRequestException({
+        message: `Error deleting event: ${error.message}`,
+      });
     }
   }
 }

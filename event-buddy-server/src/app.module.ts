@@ -14,7 +14,6 @@ import { User } from './user/entities/user.entity';
 
 @Module({
   imports: [
-    EventModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env.db'],
@@ -40,6 +39,8 @@ import { User } from './user/entities/user.entity';
     UserModule,
 
     RoleModule,
+
+    EventModule,
   ],
   controllers: [AppController],
   providers: [AppService],

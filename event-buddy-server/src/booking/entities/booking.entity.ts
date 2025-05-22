@@ -16,11 +16,20 @@ export class Booking {
   @Column({ type: 'int', nullable: false })
   seat_booked: number;
 
-  @ManyToOne(() => User, (user) => user.bookings)
+  @Column({ type: 'varchar', length: 50, default: 'Active' })
+  status: string;
+
+  @ManyToOne(() => User, (user) => user.bookings, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'email', referencedColumnName: 'email' })
   user: User;
 
-  @ManyToOne(() => Event, (event) => event.bookings)
+  @ManyToOne(() => Event, (event) => event.bookings, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
   @JoinColumn({ name: 'event_id', referencedColumnName: 'event_id' })
   event: Event;
 }
