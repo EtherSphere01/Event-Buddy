@@ -1,15 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleOnSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
+
+    try {
+      const res = await axios.post(
+        `${process.env.NEXT_PUBLIC_LOCALHOST}/auth/signin`,
+        {
+          email,
+          password,
+        }
+      );
+      const { data } = res;
+      if (data?.message === undefined) {
+        toast.success("Login successful");
+        localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
+        localStorage.setItem("refreshToken", JSON.stringify(data.refreshToken));
+      } else {
+        toast.error(data?.message || "Login failed");
+      }
+    } catch (err: any) {
+      const message =
+        err.response?.data?.message || "Invalid credentials or server error";
+      toast.error(message);
+    }
   };
 
   return (
