@@ -8,9 +8,7 @@ export default function AuthLayout({
   return (
     <>
       <AuthHeader />
-      <main className="min-h-screen flex items-center justify-center bg-secondary">
-        {children}
-      </main>
+      <main className="bg-secondary">{children}</main>
     </>
   );
 }

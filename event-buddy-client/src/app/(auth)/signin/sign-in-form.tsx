@@ -4,35 +4,55 @@ import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { getRole } from "@/utilities/jwt-operation";
+import { useRouter } from "next/navigation";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_LOCALHOST}/auth/signin`,
-        {
-          email,
-          password,
+    await toast.promise(
+      (async () => {
+        try {
+          const res = await axios.post(
+            `${process.env.NEXT_PUBLIC_LOCALHOST}/auth/signin`,
+            { email, password }
+          );
+          const { data } = res;
+
+          if (data?.accessToken) {
+            const role = getRole(data.accessToken, data.refreshToken);
+            setEmail("");
+            setPassword("");
+
+            if (role === "admin") {
+              // router.push("/admin/dashboard");
+            } else {
+              // router.push("user/dashboard");
+            }
+          } else {
+            toast.error(data?.message || "Login failed");
+            return;
+          }
+        } catch (err: any) {
+          const message = err.response?.data?.message || "Login failed";
+          toast.error(message);
         }
-      );
-      const { data } = res;
-      if (data?.message === undefined) {
-        toast.success("Login successful");
-        localStorage.setItem("accessToken", JSON.stringify(data.accessToken));
-        localStorage.setItem("refreshToken", JSON.stringify(data.refreshToken));
-      } else {
-        toast.error(data?.message || "Login failed");
+      })(),
+      {
+        pending: "Signing in...",
+        // success: "Login successful",
+        error: {
+          render({ data }: any) {
+            return data?.message || data?.toString() || "Login failed";
+          },
+        },
       }
-    } catch (err: any) {
-      const message =
-        err.response?.data?.message || "Invalid credentials or server error";
-      toast.error(message);
-    }
+    );
   };
 
   return (

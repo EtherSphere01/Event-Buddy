@@ -9,8 +9,14 @@ export class Event {
   @Column({ type: 'varchar', length: 255, nullable: false })
   title: string;
 
-  @Column({ type: 'timestamp', nullable: false })
-  date_time: Date;
+  @Column({ type: 'date', nullable: false })
+  date: Date;
+
+  @Column({ type: 'time', nullable: false })
+  start_time: string;
+
+  @Column({ type: 'time', nullable: false })
+  end_time: string;
 
   @Column({ type: 'text', nullable: false })
   description: string;

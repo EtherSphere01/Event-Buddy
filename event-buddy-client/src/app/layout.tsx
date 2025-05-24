@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning={true}>
       <body className="bg-background text-foreground">
         {children}
-        <ToastContainer position="top-right" autoClose={3000} />;
+        <ToastContainer position="top-right" autoClose={3000} />
       </body>
     </html>
   );

@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsArray,
   MaxLength,
+  Matches,
 } from 'class-validator';
 
 export class CreateEventDto {
@@ -16,7 +17,18 @@ export class CreateEventDto {
 
   @IsDateString()
   @IsNotEmpty()
-  date_time: string;
+  date: string;
+
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/, {
+    message: 'start_time must be in HH:MM:SS 24-hour format',
+  })
+  start_time: string;
+
+  @IsNotEmpty()
+  @Matches(/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/, {
+    message: 'end_time must be in HH:MM:SS 24-hour format',
+  })
+  end_time: string;
 
   @IsString()
   @IsNotEmpty()

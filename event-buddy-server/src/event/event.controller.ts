@@ -14,7 +14,6 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
 
-@Auth(AuthType.None)
 @Controller('event')
 export class EventController {
   constructor(private readonly eventService: EventService) {}
@@ -25,11 +24,13 @@ export class EventController {
     return await this.eventService.create(createEventDto);
   }
 
+  @Auth(AuthType.None)
   @Get()
   async findAll() {
     return await this.eventService.findAll();
   }
 
+  @Auth(AuthType.None)
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.eventService.findOne(+id);

@@ -56,7 +56,9 @@ export class EventService {
     const event = this.eventRepository.create({
       ...createEventDto,
       image_path: relativeImagePath,
-      date_time: new Date(createEventDto.date_time),
+      date: new Date(createEventDto.date),
+      start_time: createEventDto.start_time,
+      end_time: createEventDto.end_time,
     });
 
     try {
