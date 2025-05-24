@@ -1,6 +1,7 @@
 // src/app/(auth)/layout.tsx
 "use client";
 import AuthHeader from "@/components/auth-header";
+import SetLoading from "@/components/set-loading";
 
 export default function AuthLayout({
   children,
@@ -9,6 +10,7 @@ export default function AuthLayout({
 }) {
   return (
     <>
+      <SetLoading />
       <AuthHeader />
       <main className="bg-secondary min-h-screen">{children}</main>
     </>

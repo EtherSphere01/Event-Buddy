@@ -1,8 +1,10 @@
-// app/(public)/layout.tsx
 import MainHeader from "@/components/main-header";
 import MainFooter from "@/components/main-footer";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
+import LoadingSpinner from "@/components/loading-spinner";
+import SetLoading from "@/components/set-loading";
 
 export default function PublicLayout({
   children,
@@ -11,6 +13,7 @@ export default function PublicLayout({
 }) {
   return (
     <>
+      <SetLoading />
       <MainHeader />
       <main>{children}</main>
       <MainFooter />

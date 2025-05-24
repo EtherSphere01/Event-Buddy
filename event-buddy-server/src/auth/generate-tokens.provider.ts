@@ -37,6 +37,8 @@ export class GenerateTokensProvider {
         {
           user_id: user.user_id,
           role: role,
+          email: user.email,
+          full_name: user.full_name,
         },
       ),
 

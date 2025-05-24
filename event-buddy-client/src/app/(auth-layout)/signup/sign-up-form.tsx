@@ -1,16 +1,26 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { CheckCircle } from "lucide-react";
 import "react-toastify/dist/ReactToastify.css";
 import { getRole } from "@/utilities/jwt-operation";
+import { useUser } from "@/context/user-context";
+import { useRouter } from "next/navigation";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const { user, setUser, loading } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/");
+    }
+  }, [loading, user, router]);
 
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,8 +58,8 @@ export default function SignInForm() {
                     // router.push("user/dashboard");
                   }
                 } else {
-                    toast.error(data?.message || "Login failed");
-                    return;
+                  toast.error(data?.message || "Login failed");
+                  return;
                 }
               } catch (err: any) {
                 const message =

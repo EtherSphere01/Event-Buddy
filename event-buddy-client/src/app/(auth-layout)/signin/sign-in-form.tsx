@@ -1,16 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { getRole } from "@/utilities/jwt-operation";
+import { decodeJWT, getRole } from "@/utilities/jwt-operation";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/context/user-context";
+import SetLoading from "@/components/set-loading";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { user, setUser, loading } = useUser();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/");
+    }
+  }, [loading, user, router]);
+
+  if (loading || user) {
+    return <SetLoading />;
+  }
 
   const handleOnSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,9 +41,11 @@ export default function SignInForm() {
             const role = getRole(data.accessToken, data.refreshToken);
             setEmail("");
             setPassword("");
+            const user = decodeJWT();
+            setUser(user);
 
-            if (role === "admin") {
-              // router.push("/admin/dashboard");
+            if (role === "Admin") {
+              router.push("/");
             } else {
               // router.push("user/dashboard");
             }

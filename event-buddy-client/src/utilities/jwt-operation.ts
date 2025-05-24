@@ -12,4 +12,23 @@ const getRole = (accessToken: string, refreshToken: string): string => {
     return "User";
   }
 };
-export { getRole };
+
+const decodeJWT = (): any => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+      return null;
+    }
+    const decoded: any = jwtDecode(token);
+    return decoded;
+  } catch (error) {
+    console.error("Error decoding JWT:", error);
+    return null;
+  }
+};
+
+const singOut = async (): Promise<void> => {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+};
+export { getRole, decodeJWT, singOut };
