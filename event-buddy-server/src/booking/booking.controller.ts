@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
 } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
@@ -18,7 +19,7 @@ export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
 
   @Post('create')
-  create(@Body() createBookingDto: CreateBookingDto) {
+  create(@Body() createBookingDto: CreateBookingDto, @Req() req) {
     return this.bookingService.create(createBookingDto);
   }
 

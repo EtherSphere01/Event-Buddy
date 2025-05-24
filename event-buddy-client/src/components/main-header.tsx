@@ -28,6 +28,15 @@ export default function MainHeader() {
 
   if (!isHydrated) return null;
 
+  const handleDashboard = () => {
+    if (user?.role === "Admin") {
+      router.push("/admin/dashboard");
+    } else if (user?.role === "User") {
+      router.push("/user/dashboard");
+    }
+    setMenuOpen(false);
+  };
+
   return (
     <header className="bg-primary">
       <div className="container mx-auto flex items-center justify-between p-4">
@@ -55,7 +64,12 @@ export default function MainHeader() {
             </>
           ) : (
             <>
-              <span className="text-textPrimary">Hello, {user.full_name}</span>
+              <span
+                onClick={() => handleDashboard()}
+                className="text-textPrimary hover:cursor-pointer underline"
+              >
+                Hello, {user.full_name}
+              </span>
               <button
                 onClick={handleSignOut}
                 className="text-white bg-gradient-to-t from-btnPrimaryStart to-btnPrimaryEnd hover:bg-gradient-to-b hover:from-btnPrimaryStart hover:to-btnPrimaryEnd px-4 py-2 rounded-md transition"
@@ -100,8 +114,11 @@ export default function MainHeader() {
             </>
           ) : (
             <>
-              <span className="text-textPrimary font-semibold">
-                Hello, {user.full_name}
+              <span
+                onClick={() => handleDashboard()}
+                className="text-textPrimary font-semibold hover:cursor-pointer underline text-center mb-2"
+              >
+                {user.full_name}
               </span>
               <button
                 onClick={() => {
