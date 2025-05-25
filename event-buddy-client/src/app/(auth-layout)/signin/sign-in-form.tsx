@@ -42,6 +42,12 @@ export default function SignInForm() {
             setEmail("");
             setPassword("");
             const user = decodeJWT();
+            // const signedInUser = {
+            //   id: user.user_id,
+            //   role: user.role,
+            //   email: user.email,
+            //   full_name: user.full_name,
+            // };
             setUser(user);
 
             if (role === "Admin") {

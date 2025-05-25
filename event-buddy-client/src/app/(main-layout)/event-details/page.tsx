@@ -16,6 +16,8 @@ import { toast } from "react-toastify";
 import { useUser } from "@/context/user-context";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { getToken, singOut } from "@/utilities/jwt-operation";
+import SetLoading from "@/components/set-loading";
 
 const EventDetails = () => {
   const techEvent = {
@@ -45,7 +47,7 @@ const EventDetails = () => {
   const [spotLeft, setSpotLeft] = useState(techEvent.available_seats);
   const [totalBooked, setTotalBooked] = useState(techEvent.total_booked);
   const [clicked, setClicked] = useState(false);
-  const { user } = useUser();
+  const { user, setUser, setLoading } = useUser();
   const router = useRouter();
 
   const dateValue = techEvent.date;
@@ -92,31 +94,42 @@ const EventDetails = () => {
       seat_booked: selectSeat,
     };
 
-    const token = localStorage.getItem("accessToken");
+    // console.log("Booking data:", bookingData);
 
-    if (!token) {
-      toast.error("Authorization token not found.");
-      return;
+    const token = await getToken();
+
+    if (user.id === undefined || user.id === null || !token) {
+      setLoading(true);
+      await singOut();
+      setUser(null);
+      setLoading(false);
+      router.push("/signin");
     }
+
     // console.log(token);
 
     try {
-      await toast.promise(
-        axios.post(`http://localhost:3000/booking/create`, bookingData, {
-          headers: {
-            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo4LCJpYXQiOjE3NDgxMTU5MjQsImV4cCI6MTc0ODIwMjMyNCwiYXVkIjoibG9jYWxob3N0OjMwMDAiLCJpc3MiOiJsb2NhbGhvc3Q6MzAwMCJ9.2fc7rj_a68bI0qy8Q0hrJK7ESMtt0OB2K4r9aDSf_RE`,
-          },
-        }),
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_LOCALHOST}/booking/create`,
+        bookingData,
         {
-          pending: "Booking in progress...",
-          success: "Booking successful!",
-          error: "Booking failed. Please try again.",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      setSpotLeft((prev) => prev - selectSeat);
-      setTotalBooked((prev) => prev + selectSeat);
-      setSelectSeat(0);
-    } catch (error: any) {}
+
+      const { data } = response;
+
+      if (data) {
+        setSpotLeft((prev) => prev - selectSeat);
+        setTotalBooked((prev) => prev + selectSeat);
+        setSelectSeat(0);
+        toast.success("Booking successful");
+      } else {
+        toast.error(data.message || "Booking failed");
+      }
+    } catch (error) {}
   };
 
   const [isHydrated, setIsHydrated] = useState(false);

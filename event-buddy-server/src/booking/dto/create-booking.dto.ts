@@ -1,4 +1,3 @@
-// src/booking/dto/create-booking.dto.ts
 import {
   IsInt,
   IsEmail,
@@ -12,7 +11,7 @@ import {
 
 export class CreateBookingDto {
   @IsInt()
-  @IsNotEmpty()
+  @IsOptional()
   user_id: number;
 
   @IsInt()

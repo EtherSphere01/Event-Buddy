@@ -24,11 +24,13 @@ export class BookingService {
     private readonly eventRepo: Repository<Event>,
   ) {}
 
-  async create(createBookingDto: CreateBookingDto) {
+  async create(createBookingDto: CreateBookingDto, req: any) {
     try {
       const { user_id, event_id, seat_booked } = createBookingDto;
 
-      const user = await this.userRepo.findOneBy({ user_id: +user_id });
+      const id = req.user?.user_id || user_id;
+
+      const user = await this.userRepo.findOneBy({ user_id: +id });
       if (!user) {
         throw new NotFoundException(`User with ID ${user_id} not found`);
       }
@@ -47,22 +49,24 @@ export class BookingService {
       const booking = this.bookingRepo.create({
         user,
         event,
-        seat_booked: seat_booked,
+        seat_booked,
       });
 
       event.available_seats -= seat_booked;
       event.total_booked += seat_booked;
 
       await this.eventRepo.save(event);
-      const savedBooking = this.bookingRepo.save(booking);
+      const savedBooking = await this.bookingRepo.save(booking);
+
       return {
-        createBookingDto,
+        booking: savedBooking,
         event,
       };
     } catch (error) {
-      if (error instanceof NotFoundException) {
-        throw error;
-      } else if (error instanceof BadRequestException) {
+      if (
+        error instanceof NotFoundException ||
+        error instanceof BadRequestException
+      ) {
         throw error;
       }
       throw new InternalServerErrorException({
