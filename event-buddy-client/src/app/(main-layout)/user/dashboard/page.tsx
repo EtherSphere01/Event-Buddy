@@ -7,12 +7,15 @@ import Link from "next/link";
 import { getToken, singOut } from "@/utilities/jwt-operation";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import SetLoading from "@/components/set-loading";
+import { toast } from "react-toastify";
 
 const UserDashboard = () => {
   const [isHydrated, setIsHydrated] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const { user, setUser, setLoading } = useUser();
   const router = useRouter();
+
   type Booking = {
     booking_id: number;
     booking_status: string;
@@ -27,12 +30,6 @@ const UserDashboard = () => {
     [key: string]: any;
   };
 
-  useEffect(() => {
-    if (isHydrated && !user) {
-      router.push("/signin");
-    }
-  }, [isHydrated, user]);
-
   const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
@@ -40,55 +37,67 @@ const UserDashboard = () => {
   }, []);
 
   useEffect(() => {
-    if (!isHydrated || !user?.id) return;
+    if (isHydrated && !user) {
+      router.push("/signin");
+    }
+  }, [isHydrated, user]);
 
-    const getData = async () => {
-      const token = await getToken();
+  const fetchBookings = async () => {
+    const token = await getToken();
 
-      if (!token || !user || user.role !== "User" || user === undefined) {
-        setLoading(false);
+    if (!token || !user || user.role !== "User") {
+      setLoading(false);
+      setUser(null);
+      await singOut();
+      router.push("/signin");
+      return;
+    }
+
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_LOCALHOST}/booking/user/${user.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setBookings(response.data);
+    } catch (error: any) {
+      console.error("Error fetching bookings:", error);
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please sign in again.");
         setUser(null);
         await singOut();
         router.push("/signin");
-        return;
       }
+    } finally {
+      setLoading(false);
+      setCheckingAuth(false);
+    }
+  };
 
-      try {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_LOCALHOST}/booking/user/${user.id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setBookings(response.data);
-        //   console.log(response.data);
-      } catch (error) {
-        console.error("Error fetching bookings:", error);
-      } finally {
-        setLoading(false);
-        setCheckingAuth(false);
-      }
-    };
-
-    getData();
+  useEffect(() => {
+    if (isHydrated && user?.id) {
+      fetchBookings();
+    }
   }, [isHydrated, user?.id]);
 
   if (!isHydrated || checkingAuth) {
-    return null; // or <LoadingSpinner /> if you want
+    return <SetLoading />;
   }
 
   return (
-    <div className="bg-primary  min-h-screen">
-      <div className="container mx-auto p-4 ">
+    <div className="bg-primary min-h-screen">
+      <div className="container mx-auto p-4">
         <div>
-          <h1 className="text-textPrimary text-2xl md:3xl ">Dashboard</h1>
+          <h1 className="text-textPrimary text-2xl md:3xl">Dashboard</h1>
           <p className="text-textSecondary pb-12">
             Welcome back, {user?.full_name}!! Here you can manage your event
             registrations.
           </p>
         </div>
+
         <div>
           <p className="text-textPrimary text-lg pb-2">My Registered Events</p>
         </div>
@@ -112,7 +121,11 @@ const UserDashboard = () => {
                 return dateA.getTime() - dateB.getTime();
               })
               .map((booking) => (
-                <RegisteredCard key={booking.booking_id} booking={booking} />
+                <RegisteredCard
+                  key={booking.booking_id}
+                  booking={booking}
+                  refetchBookings={fetchBookings} 
+                />
               ))
           ) : (
             <p className="text-textSecondary">
@@ -124,7 +137,7 @@ const UserDashboard = () => {
         <div className="flex items-center justify-center w-full">
           <Link
             href={"/"}
-            className="mt-6 w-[12rem] px-4 py-2 bg-gradient-to-t from-btnPrimaryStart to-btnPrimaryEnd rounded-lg text-white hover:cursor-pointer hover:bg-gradient-to-t hover:from-btnPrimaryEnd hover:to-btnPrimaryStart "
+            className="mt-6 w-[12rem] px-4 py-2 bg-gradient-to-t from-btnPrimaryStart to-btnPrimaryEnd rounded-lg text-white hover:cursor-pointer hover:bg-gradient-to-t hover:from-btnPrimaryEnd hover:to-btnPrimaryStart"
           >
             Browse more events
           </Link>

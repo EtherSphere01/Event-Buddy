@@ -1,18 +1,17 @@
 import { useUser } from "@/context/user-context";
 import { getToken, singOut } from "@/utilities/jwt-operation";
 import axios from "axios";
-import { format, isBefore, parse, parseISO, set } from "date-fns";
+import { format, isBefore, parse, parseISO } from "date-fns";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 
 type eventsData = {
   booking: {
     booking_id: number;
     booking_status: string;
-        event: {
-        
+    event: {
       title: string;
       date: string;
       start_time: string;
@@ -22,27 +21,25 @@ type eventsData = {
     };
     [key: string]: any;
   };
+  refetchBookings: () => void;
 };
 
-const RegisteredCard = ({ booking }: eventsData) => {
+const RegisteredCard = ({ booking, refetchBookings }: eventsData) => {
   const techEvent = booking?.event;
-
   const { user, setUser, setLoading } = useUser();
+  const [isHydrated, setIsHydrated] = useState(false);
   const router = useRouter();
   const [bookingStatus, setBookingStatus] = useState<string | null>(
     booking.booking_status
   );
 
-  const dateValue = techEvent.date;
-  const dateObj = parseISO(dateValue);
+  const dateObj = parseISO(techEvent.date);
   const monthName = format(dateObj, "LLL");
   const dayName = format(dateObj, "EEEE");
   const year = format(dateObj, "yyyy");
   const date = format(dateObj, "d");
-
   const today = new Date();
   const isExpired = isBefore(dateObj, today);
-
   const startTime = format(
     parse(techEvent.start_time, "HH:mm:ss", new Date()),
     "hh:mm a"
@@ -76,6 +73,7 @@ const RegisteredCard = ({ booking }: eventsData) => {
       if (response.status === 200) {
         setBookingStatus("Cancelled");
         toast.success("Booking cancelled successfully");
+        refetchBookings();
       }
     } catch (error) {
       toast.error("Failed to cancel registration");
@@ -83,6 +81,14 @@ const RegisteredCard = ({ booking }: eventsData) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setBookingStatus(booking.booking_status);
+  }, [booking.booking_status]);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   return (
     <div>
@@ -134,14 +140,14 @@ const RegisteredCard = ({ booking }: eventsData) => {
           </div>
         </div>
         <div onClick={() => handleCancel(booking.booking_id)}>
-          {isExpired && booking.status === "Active" ? (
+          {isExpired && booking.booking_status === "Active" ? (
             <button
               disabled
               className="px-4 py-2 bg-gray-400 rounded-lg text-white cursor-not-allowed"
             >
               Event Ended
             </button>
-          ) : booking.status === "Cancelled" ? (
+          ) : bookingStatus === "Cancelled" ? (
             <button
               disabled
               className="px-4 py-2 bg-red-800 rounded-lg text-white cursor-not-allowed"
@@ -149,7 +155,7 @@ const RegisteredCard = ({ booking }: eventsData) => {
               Cancelled
             </button>
           ) : (
-            <button className="px-4 py-2 bg-gradient-to-t from-btnSecondaryStart to-btnSecondaryEnd rounded-lg text-white hover:cursor-pointer hover:bg-gradient-to-t hover:from-btnSecondaryEnd hover:to-btnSecondaryStart">
+            <button className="px-4 py-2 bg-gradient-to-t from-btnSecondaryStart to-btnSecondaryEnd rounded-lg text-white hover:cursor-pointer hover:from-btnSecondaryEnd hover:to-btnSecondaryStart">
               Cancel Registration
             </button>
           )}
