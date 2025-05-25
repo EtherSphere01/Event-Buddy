@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 type eventsData = {
   booking: {
     booking_id: number;
-    booking_status: string;
+    status: string;
     event: {
       title: string;
       date: string;
@@ -29,9 +29,6 @@ const RegisteredCard = ({ booking, refetchBookings }: eventsData) => {
   const { user, setUser, setLoading } = useUser();
   const [isHydrated, setIsHydrated] = useState(false);
   const router = useRouter();
-  const [bookingStatus, setBookingStatus] = useState<string | null>(
-    booking.booking_status
-  );
 
   const dateObj = parseISO(techEvent.date);
   const monthName = format(dateObj, "LLL");
@@ -71,7 +68,6 @@ const RegisteredCard = ({ booking, refetchBookings }: eventsData) => {
         }
       );
       if (response.status === 200) {
-        setBookingStatus("Cancelled");
         toast.success("Booking cancelled successfully");
         refetchBookings();
       }
@@ -81,10 +77,6 @@ const RegisteredCard = ({ booking, refetchBookings }: eventsData) => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    setBookingStatus(booking.booking_status);
-  }, [booking.booking_status]);
 
   useEffect(() => {
     setIsHydrated(true);
@@ -139,27 +131,29 @@ const RegisteredCard = ({ booking, refetchBookings }: eventsData) => {
             </div>
           </div>
         </div>
-        <div onClick={() => handleCancel(booking.booking_id)}>
-          {isExpired && booking.booking_status === "Active" ? (
-            <button
-              disabled
-              className="px-4 py-2 bg-gray-400 rounded-lg text-white cursor-not-allowed"
-            >
-              Event Ended
-            </button>
-          ) : bookingStatus === "Cancelled" ? (
-            <button
-              disabled
-              className="px-4 py-2 bg-red-800 rounded-lg text-white cursor-not-allowed"
-            >
-              Cancelled
-            </button>
-          ) : (
-            <button className="px-4 py-2 bg-gradient-to-t from-btnSecondaryStart to-btnSecondaryEnd rounded-lg text-white hover:cursor-pointer hover:from-btnSecondaryEnd hover:to-btnSecondaryStart">
-              Cancel Registration
-            </button>
-          )}
-        </div>
+
+        {isExpired && booking.status === "Active" ? (
+          <button
+            disabled
+            className="px-4 py-2 bg-gray-400 rounded-lg text-white cursor-not-allowed"
+          >
+            Event Ended
+          </button>
+        ) : booking.status === "Cancelled" ? (
+          <button
+            disabled
+            className="px-4 py-2 bg-red-800 rounded-lg text-white cursor-not-allowed"
+          >
+            Cancelled
+          </button>
+        ) : (
+          <button
+            onClick={() => handleCancel(booking.booking_id)}
+            className="px-4 py-2 bg-gradient-to-t from-btnSecondaryStart to-btnSecondaryEnd rounded-lg text-white hover:cursor-pointer hover:from-btnSecondaryEnd hover:to-btnSecondaryStart"
+          >
+            Cancel Registration
+          </button>
+        )}
       </div>
     </div>
   );

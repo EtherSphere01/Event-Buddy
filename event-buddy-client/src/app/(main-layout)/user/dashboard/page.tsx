@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@/context/user-context";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import RegisteredCard from "./registered-card";
 import Link from "next/link";
 import { getToken, singOut } from "@/utilities/jwt-operation";
@@ -18,16 +18,14 @@ const UserDashboard = () => {
 
   type Booking = {
     booking_id: number;
-    booking_status: string;
+    status: string;
     event: {
       title: string;
       date: string;
       start_time: string;
       end_time: string;
       location: string;
-      [key: string]: any;
     };
-    [key: string]: any;
   };
 
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -40,9 +38,9 @@ const UserDashboard = () => {
     if (isHydrated && !user) {
       router.push("/signin");
     }
-  }, [isHydrated, user]);
+  }, [isHydrated, user, router]);
 
-  const fetchBookings = async () => {
+  const refetchBookings = useCallback(async () => {
     const token = await getToken();
 
     if (!token || !user || user.role !== "User") {
@@ -75,13 +73,13 @@ const UserDashboard = () => {
       setLoading(false);
       setCheckingAuth(false);
     }
-  };
+  }, [user, setUser, setLoading, router]);
 
   useEffect(() => {
     if (isHydrated && user?.id) {
-      fetchBookings();
+      refetchBookings();
     }
-  }, [isHydrated, user?.id]);
+  }, [isHydrated, user?.id, refetchBookings]);
 
   if (!isHydrated || checkingAuth) {
     return <SetLoading />;
@@ -106,16 +104,8 @@ const UserDashboard = () => {
           {bookings && bookings.length > 0 ? (
             bookings
               .sort((a, b) => {
-                if (
-                  a.booking_status === "Active" &&
-                  b.booking_status !== "Active"
-                )
-                  return -1;
-                if (
-                  a.booking_status !== "Active" &&
-                  b.booking_status === "Active"
-                )
-                  return 1;
+                if (a.status === "Active" && b.status !== "Active") return -1;
+                if (a.status !== "Active" && b.status === "Active") return 1;
                 const dateA = new Date(a.event.date);
                 const dateB = new Date(b.event.date);
                 return dateA.getTime() - dateB.getTime();
@@ -124,7 +114,7 @@ const UserDashboard = () => {
                 <RegisteredCard
                   key={booking.booking_id}
                   booking={booking}
-                  refetchBookings={fetchBookings} 
+                  refetchBookings={refetchBookings}
                 />
               ))
           ) : (
@@ -137,7 +127,7 @@ const UserDashboard = () => {
         <div className="flex items-center justify-center w-full">
           <Link
             href={"/"}
-            className="mt-6 w-[12rem] px-4 py-2 bg-gradient-to-t from-btnPrimaryStart to-btnPrimaryEnd rounded-lg text-white hover:cursor-pointer hover:bg-gradient-to-t hover:from-btnPrimaryEnd hover:to-btnPrimaryStart"
+            className="mt-6 w-[12rem] px-4 py-2 bg-gradient-to-t from-btnPrimaryStart to-btnPrimaryEnd rounded-lg text-white hover:cursor-pointer hover:from-btnPrimaryEnd hover:to-btnPrimaryStart"
           >
             Browse more events
           </Link>
