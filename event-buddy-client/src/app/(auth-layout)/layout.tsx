@@ -10,7 +10,6 @@ export default function AuthLayout({
 }) {
   return (
     <>
-      <SetLoading />
       <AuthHeader />
       <main className="bg-secondary min-h-screen">{children}</main>
     </>

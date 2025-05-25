@@ -188,4 +188,25 @@ export class BookingService {
       });
     }
   }
+
+  async findUserBookings(userId: number) {
+    try {
+      const user = await this.userRepo.findOne({
+        where: { user_id: userId },
+        relations: ['bookings', 'bookings.event'],
+      });
+      if (!user) {
+        throw new NotFoundException(`User with ID ${userId} not found`);
+      }
+      return user.bookings;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException({
+        message: 'Failed to fetch user bookings',
+        error: error.message,
+      });
+    }
+  }
 }

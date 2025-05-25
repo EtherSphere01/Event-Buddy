@@ -174,7 +174,7 @@ const EventDetails = () => {
         <div className="bg-white p-6 rounded-lg border-2 border-[#bdbbfb3d] flex flex-col lg:flex-row items-start lg:items-center lg:justify-between gap-7 mb-5">
           <div className="flex items-center justify-start gap-5">
             <div className="text-[#1D4ED8] ">
-              <Calendar size={40} />
+              <Calendar size={33} />
             </div>
             <div>
               <h4 className="text-[#6A6A6A]">Date</h4>
@@ -186,7 +186,7 @@ const EventDetails = () => {
 
           <div className="flex items-center justify-start gap-5">
             <div className="text-[#1D4ED8] ">
-              <Clock size={40} />
+              <Clock size={33} />
             </div>
             <div>
               <h4 className="text-[#6A6A6A]">Time</h4>
@@ -198,7 +198,7 @@ const EventDetails = () => {
 
           <div className="flex items-center justify-start gap-5">
             <div className="text-[#1D4ED8] ">
-              <MapPin size={40} />
+              <MapPin size={33} />
             </div>
             <div>
               <h4 className="text-[#6A6A6A]">Location</h4>

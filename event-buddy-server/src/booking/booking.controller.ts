@@ -17,6 +17,7 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
+import { Role } from 'src/role/entities/role.entity';
 
 // @Auth(AuthType.None)
 @Controller('booking')
@@ -41,6 +42,13 @@ export class BookingController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.bookingService.findOne(+id);
+  }
+
+  @Roles('Admin', 'User')
+  @Get('user/:id')
+  findUserBookings(@Param('id') id: string, @Request() req) {
+    // console.log('Request User:', req.user);
+    return this.bookingService.findUserBookings(+id);
   }
 
   @Roles('Admin', 'User')

@@ -12,7 +12,7 @@ export default {
         background: "var(--background)",
         foreground: "var(--foreground)",
         secondary: "#ECEEFF",
-        primary: "#FAFAFF",
+        primary: "#fafaff1a",
         accent: "#6A6A6A",
         textPrimary: "#242565",
         textSecondary: "#8570AD",

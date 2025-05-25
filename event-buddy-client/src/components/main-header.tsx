@@ -37,8 +37,9 @@ export default function MainHeader() {
     setMenuOpen(false);
   };
 
+
   return (
-    <header className="bg-primary">
+    <header className="bg-[#fafaff1a] sticky top-0 z-50  backdrop-blur-xl">
       <div className="container mx-auto flex items-center justify-between p-4">
         <Link href={"/"} className="flex items-center gap-3">
           <img src="/icons/ticket-2.png" alt="Event buddy" className="w-8" />

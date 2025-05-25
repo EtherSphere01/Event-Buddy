@@ -13,7 +13,7 @@ export default function MainFooter() {
 
   return (
     <footer className="bg-secondary w-full h-[15rem] md:h-[13rem] ">
-      <div className="container mx-auto border-b-2 border-[#2C257521] p-8">
+      <div className="container mx-auto border-b-2 border-[#2C257521] pl-4 pt-8 pb-8 pr-4">
         <div className="md:grid grid-cols-2 justify-between w-full md:mt-2 ">
           <div className="flex gap-3 items-center justify-center md:justify-start container mx-auto bock  mb-5 md:mb-0 ">
             <img src="/icons/ticket-2.png" alt="Event buddy" className="w-8" />
@@ -29,7 +29,7 @@ export default function MainFooter() {
               </li>
               <li className="hover:underline">
                 <Link href="/signin">Sign in</Link>
-              </li >
+              </li>
               <li className="hover:underline">
                 <Link href="/signup">Sign up</Link>
               </li>
