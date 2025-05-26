@@ -1,5 +1,7 @@
 import {
+  IsInt,
   IsNotEmpty,
+  IsOptional,
   IsString,
   MaxLength,
   Min,
@@ -11,4 +13,8 @@ export class CreateRoleDto {
   @IsNotEmpty()
   @MaxLength(50)
   role_name: string;
+
+  @IsInt()
+  @IsNotEmpty()
+  role_id: number;
 }

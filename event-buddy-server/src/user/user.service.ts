@@ -29,11 +29,44 @@ export class UserService {
       let role: Role | null = null;
 
       if (createUserDto.role_id !== undefined) {
+        if (createUserDto.role_id === 1) {
+          const isRole = await this.roleRepo.findOneBy({
+            role_id: 1,
+          });
+          if (!isRole) {
+            await this.roleRepo.create({
+              role_id: 1,
+              role_name: 'User',
+            });
+            await this.roleRepo.save({
+              role_id: 1,
+              role_name: 'User',
+            });
+          }
+        } else if (createUserDto.role_id === 2) {
+          const isRole = await this.roleRepo.findOneBy({
+            role_id: 2,
+          });
+          if (!isRole) {
+            await this.roleRepo.create({
+              role_id: 2,
+              role_name: 'Admin',
+            });
+            await this.roleRepo.save({
+              role_id: 2,
+              role_name: 'Admin',
+            });
+          }
+        }
         role = await this.roleRepo.findOneBy({
           role_id: createUserDto.role_id,
         });
       } else {
-        role = await this.roleRepo.findOneBy({ role_id: 1 });
+        const createRole = {
+          role_id: 1,
+          role_name: 'User',
+        };
+        role = createRole as Role;
       }
 
       if (!role) {
