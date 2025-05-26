@@ -19,9 +19,11 @@ type EventType = {
   location: string;
   total_seats: number;
   available_seats: number;
-  time?: string;
+  start_time: string;
+  end_time: string;
   description?: string;
   tags?: string;
+  image_path: string;
 };
 
 const AdminDashboard = () => {
@@ -107,13 +109,18 @@ const AdminDashboard = () => {
         );
         toast.success("Event updated!");
       } else {
+        console.log(formData);
         await axios.post(
           `${process.env.NEXT_PUBLIC_LOCALHOST}/event/create`,
-          formData,
+          {
+            ...formData,
+            date: new Date(formData.date).toISOString(),
+          },
           {
             headers: { Authorization: `Bearer ${token}` },
           }
         );
+
         toast.success("Event created!");
       }
 

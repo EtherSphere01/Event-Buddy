@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Res,
 } from '@nestjs/common';
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
@@ -20,7 +21,8 @@ export class EventController {
 
   @Roles('Admin')
   @Post('create')
-  async create(@Body() createEventDto: CreateEventDto) {
+  async create(@Body() createEventDto: CreateEventDto, @Res() res) {
+    // console.log(res.data);
     return await this.eventService.create(createEventDto);
   }
 
