@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { format, parseISO } from "date-fns";
 import { Eye, SquarePen, Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
+import EventForm from "./event-form";
 
 type EventType = {
   event_id: number;
@@ -18,6 +19,9 @@ type EventType = {
   location: string;
   total_seats: number;
   available_seats: number;
+  time?: string;
+  description?: string;
+  tags?: string;
 };
 
 const AdminDashboard = () => {
@@ -89,13 +93,36 @@ const AdminDashboard = () => {
     setEditingEvent(null);
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleFormSubmit = async (formData: any) => {
+    const token = await getToken();
 
-    setShowModal(false);
-    setEditingEvent(null);
-    toast.success(editingEvent ? "Event updated!" : "Event created!");
-    fetchEvents();
+    try {
+      if (editingEvent) {
+        await axios.patch(
+          `${process.env.NEXT_PUBLIC_LOCALHOST}/event/update/${editingEvent.event_id}`,
+          formData,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        toast.success("Event updated!");
+      } else {
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_LOCALHOST}/event/create`,
+          formData,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        toast.success("Event created!");
+      }
+
+      handleCloseModal();
+      fetchEvents();
+    } catch (error: any) {
+      console.error("Error submitting event:", error);
+      toast.error("Failed to save event");
+    }
   };
 
   const handleDeleteClick = async (eventId: number) => {
@@ -207,62 +234,12 @@ const AdminDashboard = () => {
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-40 flex justify-center items-start pt-12">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl p-6 relative">
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
-            >
-              ✕
-            </button>
-            <h2 className="text-xl font-semibold mb-4">
-              {editingEvent ? "Edit Event" : "Create New Event"}
-            </h2>
-
-            <form onSubmit={handleFormSubmit} className="space-y-4">
-              <input
-                className="w-full border p-2 rounded"
-                placeholder="Title"
-                defaultValue={editingEvent?.title}
-                required
-              />
-              <input
-                type="date"
-                className="w-full border p-2 rounded"
-                defaultValue={editingEvent?.date?.split("T")[0]}
-                required
-              />
-              <input
-                className="w-full border p-2 rounded"
-                placeholder="Location"
-                defaultValue={editingEvent?.location}
-                required
-              />
-              <input
-                type="number"
-                className="w-full border p-2 rounded"
-                placeholder="Capacity"
-                defaultValue={editingEvent?.total_seats}
-                required
-              />
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="px-4 py-2 rounded bg-gray-300"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded text-white bg-gradient-to-t from-btnPrimaryStart to-btnPrimaryEnd"
-                >
-                  {editingEvent ? "Update" : "Create Event"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <EventForm
+          mode={editingEvent ? "edit" : "create"}
+          initialData={editingEvent || undefined}
+          onClose={handleCloseModal}
+          onSubmit={handleFormSubmit}
+        />
       )}
     </div>
   );
