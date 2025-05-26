@@ -22,7 +22,7 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
     available_seats: 0,
     total_booked: 0,
     tags: "",
-    image_path: null as File | string | null,
+    image: "",
   });
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
         available_seats: initialData.available_seats || 0,
         total_booked: initialData.total_booked || 0,
         tags: (initialData.tags || []).join(", "),
-        image_path: initialData.image || null, // image URL/path from backend
+        image: "C:/Users/naimu/Downloads/Pic.png", // image URL/path from backend
       });
     }
   }, [initialData, mode]);
@@ -67,7 +67,7 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
           : Number(formData.total_seats),
       total_booked:
         mode === "edit" && initialData ? initialData.total_booked : 0,
-      image: formData.image_path, // either File or string path
+      // image: formData.image_path, // either File or string path
       tags: formData.tags
         .split(",")
         .map((tag) => tag.trim())
@@ -224,11 +224,11 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
               <div className="flex items-center justify-center gap-4">
                 <CloudUpload className="w-10 h-10 text-gray-400" />
                 <div className="text-sm text-gray-600">
-                  {formData.image_path ? (
-                    typeof formData.image_path === "string" ? (
+                  {/* {formData.image ? (
+                    typeof formData.image === "string" ? (
                       <div className="flex flex-col items-center">
                         <img
-                          src={formData.image_path}
+                          src={formData.image}
                           alt="Current Event"
                           className="w-40 rounded shadow mt-2"
                         />
@@ -237,7 +237,7 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
                         </p>
                       </div>
                     ) : (
-                      <p>✅ Selected: {(formData.image_path as File).name}</p>
+                      <p>✅ Selected: {(formData.image as File).name}</p>
                     )
                   ) : (
                     <>
@@ -250,7 +250,7 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
                         Max 5MB | JPG, PNG
                       </p>
                     </>
-                  )}
+                  )} */}
                 </div>
               </div>
             </div>

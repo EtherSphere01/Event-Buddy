@@ -22,7 +22,7 @@ export class EventController {
   @Roles('Admin')
   @Post('create')
   async create(@Body() createEventDto: CreateEventDto, @Res() res) {
-    // console.log(res.data);
+    console.log(res.body);
     return await this.eventService.create(createEventDto);
   }
 

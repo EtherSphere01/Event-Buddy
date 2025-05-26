@@ -109,13 +109,16 @@ const AdminDashboard = () => {
         );
         toast.success("Event updated!");
       } else {
-        console.log(formData);
+        const newData = {
+          ...formData,
+          image: "C:/Users/naimu/Downloads/Pic.png",
+        };
+        console.log(newData);
         await axios.post(
           `${process.env.NEXT_PUBLIC_LOCALHOST}/event/create`,
-          {
-            ...formData,
-            date: new Date(formData.date).toISOString(),
-          },
+
+          newData,
+
           {
             headers: { Authorization: `Bearer ${token}` },
           }
