@@ -6,10 +6,10 @@ import axios from "axios";
 import { getToken, singOut } from "@/utilities/jwt-operation";
 import { useUser } from "@/context/user-context";
 import SetLoading from "@/components/set-loading";
-import EventTable from "./event-table";
 import { toast } from "react-toastify";
 import { format, parseISO } from "date-fns";
 import { Eye, SquarePen, Trash2 } from "lucide-react";
+import Swal from "sweetalert2";
 
 type EventType = {
   event_id: number;
@@ -91,11 +91,47 @@ const AdminDashboard = () => {
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-   
+
     setShowModal(false);
     setEditingEvent(null);
     toast.success(editingEvent ? "Event updated!" : "Event created!");
-    fetchEvents(); 
+    fetchEvents();
+  };
+
+  const handleDeleteClick = async (eventId: number) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this event?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      const token = await getToken();
+      try {
+        await axios.delete(
+          `${process.env.NEXT_PUBLIC_LOCALHOST}/event/delete/${eventId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setEvents((prevEvents) =>
+          prevEvents.filter((event) => event.event_id !== eventId)
+        );
+
+        toast.success("Event deleted successfully!");
+      } catch (error: any) {
+        console.error("Delete failed:", error);
+        toast.error("Failed to delete event");
+      }
+    }
   };
 
   if (!isHydrated || checkingAuth) return <SetLoading />;
@@ -156,7 +192,10 @@ const AdminDashboard = () => {
                     >
                       <SquarePen size={18} />
                     </button>
-                    <button className="text-red-600 hover:text-red-800">
+                    <button
+                      className="text-red-600 hover:text-red-800"
+                      onClick={() => handleDeleteClick(event.event_id)}
+                    >
                       <Trash2 size={18} />
                     </button>
                   </td>

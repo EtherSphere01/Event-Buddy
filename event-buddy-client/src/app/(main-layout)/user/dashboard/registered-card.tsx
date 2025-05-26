@@ -6,6 +6,7 @@ import { Calendar, Clock, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import Swal from "sweetalert2";
 
 type eventsData = {
   booking: {
@@ -47,6 +48,18 @@ const RegisteredCard = ({ booking, refetchBookings }: eventsData) => {
   );
 
   const handleCancel = async (bookingId: number) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this cancellation!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, cancel it!",
+    });
+
+    if (!result.isConfirmed) return;
+
     const token = await getToken();
 
     if (!token || !user || user.role !== "User" || user === undefined) {
