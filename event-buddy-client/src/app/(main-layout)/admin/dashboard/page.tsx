@@ -257,7 +257,7 @@ const AdminDashboard = () => {
                   type="submit"
                   className="px-4 py-2 rounded text-white bg-gradient-to-t from-btnPrimaryStart to-btnPrimaryEnd"
                 >
-                  {editingEvent ? "Update" : "Create"}
+                  {editingEvent ? "Update" : "Create Event"}
                 </button>
               </div>
             </form>

@@ -9,12 +9,7 @@ type Event = {
   initialData?: any;
 };
 
-const EventForm = ({
-  onClose,
-  onSubmit,
-  mode,
-  initialData,
-}: Event) => {
+const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
   const [formData, setFormData] = useState({
     title: "",
     date: "",
@@ -64,13 +59,19 @@ const EventForm = ({
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <label
+            htmlFor="title"
+            className="block font-medium text-textPrimary mb-2"
+          >
+            Title
+          </label>
           <input
             type="text"
             name="title"
             placeholder="Title"
             value={formData.title}
             onChange={handleChange}
-            className="w-full border p-2 rounded"
+            className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <div className="flex gap-4">
             <input
@@ -134,7 +135,7 @@ const EventForm = ({
               type="submit"
               className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
-              {mode === "edit" ? "Update" : "Create Event"}
+              {mode === "edit" ? "Update" : "Create New Event"}
             </button>
           </div>
         </form>
