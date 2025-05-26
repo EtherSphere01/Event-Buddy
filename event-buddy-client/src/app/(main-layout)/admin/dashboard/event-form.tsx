@@ -22,7 +22,7 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
     available_seats: 0,
     total_booked: 0,
     tags: "",
-    image: "",
+    image: null as File | string | null,
   });
 
   useEffect(() => {
@@ -38,7 +38,7 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
         available_seats: initialData.available_seats || 0,
         total_booked: initialData.total_booked || 0,
         tags: (initialData.tags || []).join(", "),
-        image: "C:/Users/naimu/Downloads/Pic.png", // image URL/path from backend
+        image: initialData.image_path || null,
       });
     }
   }, [initialData, mode]);
@@ -48,6 +48,21 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("File size exceeds 5MB limit");
+        return;
+      }
+      if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
+        alert("Invalid file format. Only JPG, JPEG, or PNG allowed.");
+        return;
+      }
+      setFormData((prev) => ({ ...prev, image: file }));
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -67,7 +82,7 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
           : Number(formData.total_seats),
       total_booked:
         mode === "edit" && initialData ? initialData.total_booked : 0,
-      // image: formData.image_path, // either File or string path
+      image: formData.image,
       tags: formData.tags
         .split(",")
         .map((tag) => tag.trim())
@@ -75,13 +90,12 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
     };
 
     onSubmit(finalPayload);
-    onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center bg-black bg-opacity-40 p-2 sm:p-4">
       <div className="bg-white w-full max-w-2xl rounded-2xl p-4 sm:p-6 mt-10 shadow-lg overflow-y-auto max-h-[90vh]">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb joh-4">
           <h2 className="text-xl sm:text-2xl font-semibold text-textPrimary">
             {mode === "edit" ? "Edit Event" : "Create New Event"}
           </h2>
@@ -206,25 +220,20 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
 
           {/* Image Upload */}
           <div className="mb-3">
-            <label className="block font-medium text-textPrimary mb-2">
+            <label className="block	va-block font-medium text-textPrimary mb-2">
               Image
             </label>
             <div className="relative w-full border-2 border-dashed border-gray-300 rounded-lg bg-white py-6 px-4 text-center hover:bg-gray-50">
               <input
                 type="file"
                 accept=".jpg,.jpeg,.png"
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    image_path: e.target.files?.[0] || null,
-                  }))
-                }
+                onChange={handleFileChange}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
               <div className="flex items-center justify-center gap-4">
                 <CloudUpload className="w-10 h-10 text-gray-400" />
                 <div className="text-sm text-gray-600">
-                  {/* {formData.image ? (
+                  {formData.image ? (
                     typeof formData.image === "string" ? (
                       <div className="flex flex-col items-center">
                         <img
@@ -250,7 +259,7 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
                         Max 5MB | JPG, PNG
                       </p>
                     </>
-                  )} */}
+                  )}
                 </div>
               </div>
             </div>

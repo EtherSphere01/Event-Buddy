@@ -99,31 +99,46 @@ const AdminDashboard = () => {
     const token = await getToken();
 
     try {
+      const data = new FormData();
+      data.append("title", formData.title);
+      data.append("date", formData.date);
+      data.append("start_time", formData.start_time);
+      data.append("end_time", formData.end_time);
+      data.append("description", formData.description);
+      data.append("location", formData.location);
+      data.append("total_seats", formData.total_seats.toString());
+      data.append("available_seats", formData.available_seats.toString());
+      data.append("total_booked", formData.total_booked.toString());
+      data.append("tags", JSON.stringify(formData.tags));
+      if (formData.image instanceof File) {
+        data.append("image", formData.image);
+      } else if (formData.image) {
+        data.append("image_path", formData.image);
+      }
+
       if (editingEvent) {
         await axios.patch(
           `${process.env.NEXT_PUBLIC_LOCALHOST}/event/update/${editingEvent.event_id}`,
-          formData,
+          data,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
           }
         );
         toast.success("Event updated!");
       } else {
-        const newData = {
-          ...formData,
-          image: "C:/Users/naimu/Downloads/Pic.png",
-        };
-        console.log(newData);
         await axios.post(
           `${process.env.NEXT_PUBLIC_LOCALHOST}/event/create`,
-
-          newData,
-
+          data,
           {
-            headers: { Authorization: `Bearer ${token}` },
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data",
+            },
           }
         );
-
         toast.success("Event created!");
       }
 

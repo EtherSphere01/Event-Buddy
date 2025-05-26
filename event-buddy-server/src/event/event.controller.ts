@@ -7,7 +7,9 @@ import {
   Param,
   Delete,
   Res,
+  HttpStatus,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { EventService } from './event.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
@@ -21,9 +23,16 @@ export class EventController {
 
   @Roles('Admin')
   @Post('create')
-  async create(@Body() createEventDto: CreateEventDto, @Res() res) {
-    console.log(res.body);
-    return await this.eventService.create(createEventDto);
+  async create(@Body() createEventDto: CreateEventDto, @Res() res: Response) {
+    try {
+      const createdEvent = await this.eventService.create(createEventDto);
+      return res.status(HttpStatus.CREATED).json(createdEvent);
+    } catch (error) {
+      return res.status(error.status || 500).json({
+        statusCode: error.status || 500,
+        message: error.message || 'Internal server error',
+      });
+    }
   }
 
   @Auth(AuthType.None)
@@ -43,13 +52,30 @@ export class EventController {
   async update(
     @Param('id') id: string,
     @Body() updateEventDto: UpdateEventDto,
+    @Res() res: Response,
   ) {
-    return await this.eventService.update(+id, updateEventDto);
+    try {
+      const updatedEvent = await this.eventService.update(+id, updateEventDto);
+      return res.status(HttpStatus.OK).json(updatedEvent);
+    } catch (error) {
+      return res.status(error.status || 500).json({
+        statusCode: error.status || 500,
+        message: error.message || 'Internal server error',
+      });
+    }
   }
 
   @Roles('Admin')
   @Delete('delete/:id')
-  async remove(@Param('id') id: string) {
-    return await this.eventService.remove(+id);
+  async remove(@Param('id') id: string, @Res() res: Response) {
+    try {
+      const result = await this.eventService.remove(+id);
+      return res.status(HttpStatus.OK).json(result);
+    } catch (error) {
+      return res.status(error.status || 500).json({
+        statusCode: error.status || 500,
+        message: error.message || 'Internal server error',
+      });
+    }
   }
 }
