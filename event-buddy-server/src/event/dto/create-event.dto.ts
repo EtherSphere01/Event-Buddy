@@ -44,12 +44,12 @@ export class CreateEventDto {
   total_seats: number;
 
   @IsInt()
-  @IsNotEmpty()
-  available_seats: number;
+  @IsOptional()
+  available_seats?: number;
 
   @IsInt()
-  @IsNotEmpty()
-  total_booked: number;
+  @IsOptional()
+  total_booked?: number;
 
   @IsString()
   @IsNotEmpty()

@@ -59,6 +59,12 @@ export class EventService {
       date: new Date(createEventDto.date),
       start_time: createEventDto.start_time,
       end_time: createEventDto.end_time,
+      available_seats: createEventDto.available_seats
+        ? createEventDto.available_seats
+        : createEventDto.total_seats,
+      total_booked: createEventDto.total_booked
+        ? createEventDto.total_booked
+        : 0,
     });
 
     try {
