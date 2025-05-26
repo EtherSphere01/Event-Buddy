@@ -22,3 +22,9 @@
   --foreground: #000000;
   @apply geist-500;
 }
+
+.custom-date-picker::-webkit-calendar-picker-indicator {
+  filter: invert(48%) sepia(13%) saturate(3207%) hue-rotate(230deg)
+    brightness(95%) contrast(80%);
+  transform: scale(1.5);
+}

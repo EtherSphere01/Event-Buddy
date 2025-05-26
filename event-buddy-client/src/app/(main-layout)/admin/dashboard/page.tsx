@@ -127,7 +127,7 @@ const AdminDashboard = () => {
       handleCloseModal();
       fetchEvents();
     } catch (error: any) {
-      console.error("Error submitting event:", error);
+      console.error("Error submitting event:", error.message);
       toast.error("Failed to save event");
     }
   };
