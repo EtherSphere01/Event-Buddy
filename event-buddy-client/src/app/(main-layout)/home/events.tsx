@@ -80,9 +80,9 @@ const Events = () => {
   };
 
   return (
-    <div className="bg-primary pb-24">
-      <div className="pl-2 pt-10 container mx-auto">
-        <h1 className="text-3xl font-semibold text-textPrimary mb-6">
+    <div className="bg-primary pb-24 pt-5">
+      <div className="container mx-auto">
+        <h1 className="text-3xl font-semibold text-textPrimary mb-6 md:pl-6 pl-2">
           Upcoming Events
         </h1>
 
@@ -115,7 +115,7 @@ const Events = () => {
 
         {previousEvents.length > 0 && (
           <>
-            <h2 className="text-2xl font-bold text-[#2a235e] mt-10">
+            <h2 className="text-2xl font-bold text-[#2a235e] mt-10 md:pl-6">
               Previous Events
             </h2>
             <div

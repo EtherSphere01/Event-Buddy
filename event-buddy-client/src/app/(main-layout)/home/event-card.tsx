@@ -47,8 +47,11 @@ const EventCard = ({ event }: { event: EventProps }) => {
       : event.location;
 
   return (
-    <div className="flex md:items-center justify-center pt-5">
-      <div className="[filter:drop-shadow(0_6px_8px_rgba(0,0,0,0.2))] w-[25rem] ">
+    <Link
+      href={`/event-details/${event.event_id}`}
+      className="flex md:items-center justify-center  hover:scale-105 transition-transform duration-300"
+    >
+      <div className="[filter:drop-shadow(0_6px_8px_rgba(0,0,0,0.2))] md:w-[25rem] w-[20rem]">
         <div className="md:min-w-96 min-w-80 md:min-h-96 bg-white [clip-path:polygon(20px_0%,100%_0%,100%_calc(100%-20px),calc(100%-20px)_100%,0%_100%,0%_20px)] ">
           <div className="">
             {/* img */}
@@ -140,7 +143,7 @@ const EventCard = ({ event }: { event: EventProps }) => {
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 };
 

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   CircleArrowLeft,
   Dot,
@@ -10,45 +10,60 @@ import {
   Ticket,
   Armchair,
 } from "lucide-react";
-
 import { format, isBefore, parse, parseISO } from "date-fns";
 import { toast } from "react-toastify";
 import { useUser } from "@/context/user-context";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { getToken, singOut } from "@/utilities/jwt-operation";
 import SetLoading from "@/components/set-loading";
 
 const EventDetails = () => {
-  const techEvent = {
-    event_id: 15,
-    title: "Mastering Next.js with TypeScript",
-    date: "2025-07-12",
-    start_time: "10:00:00",
-    end_time: "16:00:00",
-    description:
-      "A hands-on workshop designed for developers looking to deepen their knowledge of Nextjs and TypeScript. Learn advanced routing, server-side rendering, API integration, authentication. Deploy a production-ready project by the end of the day.",
-    location: "WeWork Tech Hub, 5th Avenue, New York, NY",
-    total_seats: 120,
-    available_seats: 43,
-    total_booked: 77,
-    image_path: "/uploads/event_nextjs_workshop_2025.png",
-    tags: [
-      "Next.js",
-      "TypeScript",
-      "Web Development",
-      "Full Stack",
-      "React",
-      "Workshop",
-    ],
-  };
+  const params = useParams();
+  const Id = params?.id;
+  const eventId = Number(Id);
 
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [techEvent, setTechEvent] = useState<any>(null);
   const [selectSeat, setSelectSeat] = useState(0);
-  const [spotLeft, setSpotLeft] = useState(techEvent.available_seats);
-  const [totalBooked, setTotalBooked] = useState(techEvent.total_booked);
+  const [spotLeft, setSpotLeft] = useState(0);
+  const [totalBooked, setTotalBooked] = useState(0);
   const [clicked, setClicked] = useState(false);
   const { user, setUser, setLoading } = useUser();
   const router = useRouter();
+
+  useEffect(() => {
+    setIsHydrated(true);
+    const fetchEvent = async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_LOCALHOST}/event/${eventId}`
+        );
+        if (response && response.data) {
+          setTechEvent(response.data);
+          setSpotLeft(response.data.available_seats);
+          setTotalBooked(response.data.total_booked);
+        } else {
+          toast.error("Event not found");
+        }
+      } catch (error) {
+        toast.error("Failed to fetch event details");
+      }
+    };
+
+    fetchEvent();
+  }, [eventId]);
+
+  if (!isHydrated) return null;
+
+  if (!techEvent) {
+    return (
+      <div className="container mx-auto p-5">
+        <SetLoading />
+        <h1 className="text-red-500 text-center">Event not found</h1>
+      </div>
+    );
+  }
 
   const dateValue = techEvent.date;
   const dateObj = parseISO(dateValue);
@@ -69,10 +84,10 @@ const EventDetails = () => {
     "hh:mm a"
   );
 
-  const descList = techEvent.description
+  const descList = (techEvent.description ?? "")
     .split(".")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
+    .map((s: string) => s.trim())
+    .filter((s: string) => s.length > 0);
 
   const handleBooking = async () => {
     if (user === null) {
@@ -94,8 +109,6 @@ const EventDetails = () => {
       seat_booked: selectSeat,
     };
 
-    // console.log("Booking data:", bookingData);
-
     const token = await getToken();
 
     if (user.id === undefined || user.id === null || !token) {
@@ -105,8 +118,6 @@ const EventDetails = () => {
       setLoading(false);
       router.push("/signin");
     }
-
-    // console.log(token);
 
     try {
       const response = await axios.post(
@@ -122,8 +133,8 @@ const EventDetails = () => {
       const { data } = response;
 
       if (data) {
-        setSpotLeft((prev) => prev - selectSeat);
-        setTotalBooked((prev) => prev + selectSeat);
+        setSpotLeft((prev: number) => prev - selectSeat);
+        setTotalBooked((prev: number) => prev + selectSeat);
         setSelectSeat(0);
         toast.success("Booking successful");
       } else {
@@ -131,15 +142,6 @@ const EventDetails = () => {
       }
     } catch (error) {}
   };
-
-  const [isHydrated, setIsHydrated] = useState(false);
-  useEffect(() => {
-    setIsHydrated(true);
-  }, []);
-
-  if (!isHydrated) {
-    return null;
-  }
 
   return (
     <div className="bg-primary" suppressHydrationWarning>
@@ -154,7 +156,7 @@ const EventDetails = () => {
         <img src="/pic.png" alt="" className="w-full rounded-lg mb-5" />
 
         <div className="mb-5">
-          {techEvent.tags.map((tag, index) => (
+          {techEvent.tags.map((tag: string, index: number) => (
             <span
               key={index}
               className="inline-block bg-[#DADEFF] text-[#1D4ED8] px-2 py-1 rounded-md text-sm mr-2 mb-2"
@@ -214,65 +216,21 @@ const EventDetails = () => {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6 ">
-              <div
-                onClick={() => {
-                  setSelectSeat(1);
-                }}
-                className={` w-[13rem] h-[9rem] border-2 rounded-md hover:bg-[#8570ad21] border-[#E6E6E6] ${
-                  selectSeat === 1 ? "border-[#8570AD] bg-[#8570ad21]" : ""
-                }`}
-              >
-                <div className="flex flex-col items-center justify-center gap-2 hover:cursor-pointer h-full">
-                  <Ticket color={"#242565"} />
-                  <h4 className="text-textPrimary">1</h4>
-                  <p className="text-textSecondary">Seat</p>
+              {[1, 2, 3, 4].map((seat) => (
+                <div
+                  key={seat}
+                  onClick={() => setSelectSeat(seat)}
+                  className={` w-[13rem] h-[9rem] border-2 rounded-md hover:bg-[#8570ad21] border-[#E6E6E6] ${
+                    selectSeat === seat ? "border-[#8570AD] bg-[#8570ad21]" : ""
+                  }`}
+                >
+                  <div className="flex flex-col items-center justify-center gap-2 hover:cursor-pointer h-full">
+                    <Ticket color={"#242565"} />
+                    <h4 className="text-textPrimary">{seat}</h4>
+                    <p className="text-textSecondary">Seat</p>
+                  </div>
                 </div>
-              </div>
-
-              <div
-                onClick={() => {
-                  setSelectSeat(2);
-                }}
-                className={` w-[13rem] h-[9rem] border-2 rounded-md hover:bg-[#8570ad21] border-[#E6E6E6] ${
-                  selectSeat === 2 ? "border-[#8570AD] bg-[#8570ad21]" : ""
-                }`}
-              >
-                <div className="flex flex-col items-center justify-center gap-2 hover:cursor-pointer h-full">
-                  <Ticket color={"#242565"} />
-                  <h4 className="text-textPrimary">2</h4>
-                  <p className="text-textSecondary">Seat</p>
-                </div>
-              </div>
-
-              <div
-                onClick={() => {
-                  setSelectSeat(3);
-                }}
-                className={` w-[13rem] h-[9rem] border-2 rounded-md hover:bg-[#8570ad21] border-[#E6E6E6] ${
-                  selectSeat === 3 ? "border-[#8570AD] bg-[#8570ad21]" : ""
-                }`}
-              >
-                <div className="flex flex-col items-center justify-center gap-2 hover:cursor-pointer h-full">
-                  <Ticket color={"#242565"} />
-                  <h4 className="text-textPrimary">3</h4>
-                  <p className="text-textSecondary">Seat</p>
-                </div>
-              </div>
-
-              <div
-                onClick={() => {
-                  setSelectSeat(4);
-                }}
-                className={` w-[13rem] h-[9rem] border-2 rounded-md hover:bg-[#8570ad21] border-[#E6E6E6] ${
-                  selectSeat === 4 ? "border-[#8570AD] bg-[#8570ad21]" : ""
-                }`}
-              >
-                <div className="flex flex-col items-center justify-center gap-2 hover:cursor-pointer h-full">
-                  <Ticket color={"#242565"} />
-                  <h4 className="text-textPrimary">4</h4>
-                  <p className="text-textSecondary">Seat</p>
-                </div>
-              </div>
+              ))}
             </div>
             <div className="flex items-center justify-center mt-6">
               <button
@@ -303,7 +261,7 @@ const EventDetails = () => {
           <div className="mb-5">
             <h5 className="">This event will feature :</h5>
             <ul className="list-disc list-inside space-y-2 text-textSecondary text-justify">
-              {descList.map((item, index) => (
+              {descList.map((item: string, index: number) => (
                 <li key={index}>{item}.</li>
               ))}
             </ul>
