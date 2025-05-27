@@ -24,34 +24,67 @@ export class EventService {
   ) {}
 
   async create(createEventDto: CreateEventDto) {
-    const originalImagePath = createEventDto.image;
+    let relativeImagePath: string | undefined;
 
-    try {
-      await fs.access(originalImagePath);
-    } catch {
-      throw new BadRequestException(
-        'Image file not found at path: ' + originalImagePath,
+    async function saveImageToBothLocations(
+      originalImagePath: string,
+    ): Promise<string> {
+      const serverUploadsDir = path.join(__dirname, '..', '..', 'uploads');
+      const clientUploadsDir = path.join(
+        process.cwd(), // event-buddy-server/
+        '..',
+        'event-buddy-client',
+        'public',
+        'uploads',
       );
+
+      await fs.mkdir(serverUploadsDir, { recursive: true });
+      await fs.mkdir(clientUploadsDir, { recursive: true });
+
+      const ext = path.extname(originalImagePath);
+      const fileName = `event_${Date.now()}${ext}`;
+
+      const serverImagePath = path.join(serverUploadsDir, fileName);
+      const clientImagePath = path.join(clientUploadsDir, fileName);
+
+      await fs.copyFile(originalImagePath, serverImagePath);
+      await fs.copyFile(originalImagePath, clientImagePath);
+
+      console.log('✅ Image copied to server:', serverImagePath);
+      console.log('✅ Image copied to client:', clientImagePath);
+
+      return `/uploads/${fileName}`;
     }
 
-    const imageBuffer = await fs.readFile(originalImagePath);
-    if (imageBuffer.length > 5 * 1024 * 1024) {
-      throw new BadRequestException('Maximum image size is 5MB');
+    if (createEventDto.image) {
+      const originalImagePath = createEventDto.image;
+
+      try {
+        await fs.access(originalImagePath);
+      } catch {
+        throw new BadRequestException(
+          'Image file not found at path: ' + originalImagePath,
+        );
+      }
+
+      const imageBuffer = await fs.readFile(originalImagePath);
+      if (imageBuffer.length > 5 * 1024 * 1024) {
+        throw new BadRequestException('Maximum image size is 5MB');
+      }
+
+      if (
+        !['.jpg', '.jpeg', '.png'].includes(path.extname(originalImagePath))
+      ) {
+        throw new BadRequestException('Invalid image format');
+      }
+
+      // ✅ ACTUALLY CALL THE FUNCTION
+      relativeImagePath = await saveImageToBothLocations(originalImagePath);
+    } else if (createEventDto.image_url) {
+      relativeImagePath = `/uploads/${createEventDto.image_url}`;
+    } else {
+      throw new BadRequestException('Image or image_url must be provided');
     }
-
-    if (!['.jpg', '.jpeg', '.png'].includes(path.extname(originalImagePath))) {
-      throw new BadRequestException('Invalid image format');
-    }
-    const uploadsDir = path.join(__dirname, '..', '..', 'uploads');
-    await fs.mkdir(uploadsDir, { recursive: true });
-
-    const ext = path.extname(originalImagePath);
-    const fileName = `event_${Date.now()}${ext}`;
-    const savedImagePath = path.join(uploadsDir, fileName);
-
-    await fs.copyFile(originalImagePath, savedImagePath);
-
-    const relativeImagePath = `/uploads/${fileName}`;
 
     const event = this.eventRepository.create({
       ...createEventDto,
@@ -59,12 +92,9 @@ export class EventService {
       date: new Date(createEventDto.date),
       start_time: createEventDto.start_time,
       end_time: createEventDto.end_time,
-      available_seats: createEventDto.available_seats
-        ? createEventDto.available_seats
-        : createEventDto.total_seats,
-      total_booked: createEventDto.total_booked
-        ? createEventDto.total_booked
-        : 0,
+      available_seats:
+        createEventDto.available_seats ?? createEventDto.total_seats,
+      total_booked: createEventDto.total_booked ?? 0,
     });
 
     try {

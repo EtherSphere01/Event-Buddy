@@ -52,8 +52,12 @@ export class CreateEventDto {
   total_booked?: number;
 
   @IsString()
-  @IsNotEmpty()
-  image: string;
+  @IsOptional()
+  image?: string;
+
+  @IsString()
+  @IsOptional()
+  image_url?: string;
 
   @IsOptional()
   @IsArray()
