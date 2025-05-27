@@ -14,7 +14,7 @@ type EventType = {
   start_time: string;
   end_time: string;
   description?: string;
-  tags: string;
+  tags: [];
   image_path: string;
 };
 
@@ -80,13 +80,16 @@ const Events = () => {
   };
 
   return (
-    <div className="bg-primary">
+    <div className="bg-primary pb-24">
       <div className="pl-2 pt-10 container mx-auto">
         <h1 className="text-3xl font-semibold text-textPrimary mb-6">
           Upcoming Events
         </h1>
 
-        <div ref={upcomingRef} className="flex flex-wrap justify-between">
+        <div
+          ref={upcomingRef}
+          className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:flex md:flex-wrap justify-around"
+        >
           {paginatedEvents.map((event) => (
             <EventCard key={event.event_id} event={event} />
           ))}
@@ -112,7 +115,7 @@ const Events = () => {
 
         {previousEvents.length > 0 && (
           <>
-            <h2 className="text-2xl font-bold text-[#2a235e] mt-10 mb-6">
+            <h2 className="text-2xl font-bold text-[#2a235e] mt-10">
               Previous Events
             </h2>
             <div

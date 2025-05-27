@@ -23,7 +23,7 @@ interface EventProps {
   start_time: string;
   end_time: string;
   description?: string;
-  tags: string;
+  tags: string[];
   image_path: string;
 }
 
@@ -48,7 +48,7 @@ const EventCard = ({ event }: { event: EventProps }) => {
 
   return (
     <div className="flex md:items-center justify-center pt-5">
-      <div className="[filter:drop-shadow(0_6px_8px_rgba(0,0,0,0.2))] w-[29rem] ">
+      <div className="[filter:drop-shadow(0_6px_8px_rgba(0,0,0,0.2))] w-[25rem] ">
         <div className="md:min-w-96 min-w-80 md:min-h-96 bg-white [clip-path:polygon(20px_0%,100%_0%,100%_calc(100%-20px),calc(100%-20px)_100%,0%_100%,0%_20px)] ">
           <div className="">
             {/* img */}
@@ -64,9 +64,7 @@ const EventCard = ({ event }: { event: EventProps }) => {
                   </p>
                   <p className="text-3xl font-bold">{date}</p>
                 </div>
-                <h3 className="text-textPrimary text-lg font-semibold">
-                  {event.title}
-                </h3>
+                <h3 className="text-textPrimary text-lg ">{event.title}</h3>
               </div>
               <div className="flex flex-col gap-2">
                 <p className="font-light text-gray-800">
@@ -124,7 +122,7 @@ const EventCard = ({ event }: { event: EventProps }) => {
                 </div>
               </div>
 
-              <div className="border-t-2 border-gray-400 py-2 ">
+              <div className="border-t-2 border-gray-200 py-2 ">
                 <div className="border-[#bdbbfb3d] flex items-center justify-between">
                   <div className="flex items-center gap-2 ">
                     <Armchair color={"#8570AD"} size={20} />
@@ -133,10 +131,9 @@ const EventCard = ({ event }: { event: EventProps }) => {
                     </p>
                   </div>
 
-                  <span className="text-gray-400">
-                    ( {event.total_seats} registered )
+                  <span className="text-textSecondary text-sm">
+                    Total {event.total_seats} Seats
                   </span>
-
                 </div>
               </div>
             </div>
