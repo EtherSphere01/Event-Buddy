@@ -52,8 +52,10 @@ The Event Buddy backend uses JWT authentication. Configure Postman to test APIs 
 
 1. Open Postman and create a new workspace or use an existing one.
 2. Click **Import** in Postman and upload the `Event Buddy.postman_collection.json` file to import the API collection.
-3. Sign in to obtain a `Bearer Token` using the `Sign In` API under the **Authentications** section of the collection.
-4. Use the following test credentials to sign in:
+3. Click **Import** in Postman and upload the `Local API.postman_environment.json` file to import the Local API for auto save the accessToken.
+4. Go to **Environments** tab and active the variable named **Local API**.
+5. Sign in to obtain a `Bearer Token` using the `Sign In` API under the **Authentications** section of the collection.
+6. Use the following test credentials to sign in:
 
    **User Login**
 
@@ -73,8 +75,8 @@ The Event Buddy backend uses JWT authentication. Configure Postman to test APIs 
    }
    ```
 
-5. After signing in, the `accessToken` is automatically stored in Postman’s environment variable `{{accessToken}}` (configured in the `Sign In` API’s test script).
-6. The `Bearer Token` is automatically applied to requests requiring authentication .
+7. After signing in, the `accessToken` is automatically stored in Postman’s environment variable `{{accessToken}}` (configured in the `Sign In` API’s test script).
+8. The `Bearer Token` is automatically applied to requests requiring authentication .
 
 ### Manual Token Setup (Optional)
 
