@@ -154,7 +154,7 @@ const EventDetails = () => {
           Back to event
         </Link>
         <img
-          src={`uploads/${techEvent.image_path}`}
+          src={`${techEvent.image_path}`}
           alt=""
           className="w-full rounded-lg mb-5"
         />
