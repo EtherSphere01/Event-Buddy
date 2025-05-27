@@ -5,6 +5,10 @@
 - **Backend**: See [Backend README](https://github.com/EtherSphere01/Event-Buddy/tree/main/event-buddy-server#readme) or the `event-buddy-server/README.md` file.
 - **Frontend**: See [Frontend README](https://github.com/EtherSphere01/Event-Buddy/tree/main/event-buddy-client#readme) or the `event-buddy-client/README.md` file.
 
+## ER Diagram
+
+_(`![ER Diagram](./Database/ER%20Diagram.png)`)_
+
 ## Technology Stack
 
 ### Versions
@@ -61,10 +65,6 @@
 
 - **Database**: The `event_buddy.sql` file in the `Database` folder contains all necessary tables and initial data. Import it into the `event_buddy` database before running the project.
 - **API Collection**: The `Event Buddy.postman_collection.json` file includes all backend API endpoints for testing. Import it into Postman to interact with the backend.
-
-## ER Diagram
-
-_(Insert ER Diagram image or description here. Update with the actual image file or link, e.g., `![ER Diagram](path/to/er-diagram.png)`)_
 
 ## Notes
 
