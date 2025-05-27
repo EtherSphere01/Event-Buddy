@@ -58,7 +58,7 @@ const EventCard = ({ event }: { event: EventProps }) => {
               <img
                 src={event.image_path}
                 alt=""
-                className="w-full h-full object-contain "
+                className="w-full h-full object-fill "
               />
             </div>
 
