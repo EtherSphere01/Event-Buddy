@@ -7,10 +7,16 @@
 - Next JS - 15
 - Tailwind CSS - 4.0
 
+### Technology Uses:
+
 ### NOTE:
 
-- The `Backend` have to run on `localhost:3000` and the `Frontend` have to run on `localhost:3001`
+- The `Backend` have to run on `localhost:3000` and the `Frontend` have to run on `localhost:3001`.
+- Database and API files are also given. Make sure to import those file before running the project.
+- Clone the project. The setup instruction is given individually on their own readme.md file.
 
-#### Backend Setup
+### ER Diagram
 
-#### FrontEnd Setup
+### Backend Setup
+
+### FrontEnd Setup
