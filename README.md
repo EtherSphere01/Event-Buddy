@@ -53,8 +53,10 @@
    git clone https://github.com/EtherSphere01/Event-Buddy.git
    ```
 2. Follow the setup instructions in the respective `README.md` files for backend and frontend:
-   - **Backend**: See [Backend README](#backend-setup) or the `event-buddy-server/README.md` file.
-   - **Frontend**: See [Frontend README](#frontend-setup) or the `event-buddy-client/README.md` file.
+
+- **Backend**: See [Backend README](https://github.com/EtherSphere01/Event-Buddy/tree/main/event-buddy-server#readme) or the `event-buddy-server/README.md` file.
+- **Frontend**: See [Frontend README](https://github.com/EtherSphere01/Event-Buddy/tree/main/event-buddy-client#readme) or the `event-buddy-client/README.md` file.
+
 3. Import the database:
    - Create a PostgreSQL database named `event_buddy`.
    - Import the `event_buddy.sql` file from the `Database` folder using pgAdmin.
