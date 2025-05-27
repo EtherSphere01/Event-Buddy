@@ -14,7 +14,7 @@ type EventType = {
   start_time: string;
   end_time: string;
   description?: string;
-  tags?: string;
+  tags: string;
   image_path: string;
 };
 
@@ -86,10 +86,7 @@ const Events = () => {
           Upcoming Events
         </h1>
 
-        <div
-          ref={upcomingRef}
-          className="flex flex-wrap justify-between"
-        >
+        <div ref={upcomingRef} className="flex flex-wrap justify-between">
           {paginatedEvents.map((event) => (
             <EventCard key={event.event_id} event={event} />
           ))}

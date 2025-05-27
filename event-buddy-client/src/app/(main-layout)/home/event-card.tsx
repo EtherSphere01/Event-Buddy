@@ -3,7 +3,14 @@
 import Link from "next/link";
 import React from "react";
 import Image from "next/image";
-import { Armchair, Calendar, CalendarDays, Clock, MapPin } from "lucide-react";
+import {
+  Armchair,
+  Calendar,
+  CalendarDays,
+  Clock,
+  Dot,
+  MapPin,
+} from "lucide-react";
 import { format, isBefore, parse, parseISO } from "date-fns";
 
 interface EventProps {
@@ -16,7 +23,7 @@ interface EventProps {
   start_time: string;
   end_time: string;
   description?: string;
-  tags?: string;
+  tags: string;
   image_path: string;
 }
 
@@ -30,12 +37,14 @@ const EventCard = ({ event }: { event: EventProps }) => {
   const isExpired = isBefore(dateObj, today);
   const startTime = format(
     parse(event.start_time, "HH:mm:ss", new Date()),
-    "hh:mm a"
+    "hh"
   );
-  const endTime = format(
-    parse(event.end_time, "HH:mm:ss", new Date()),
-    "hh:mm a"
-  );
+  const endTime = format(parse(event.end_time, "HH:mm:ss", new Date()), "hh a");
+
+  const shortLocation =
+    event.location.length > 15
+      ? event.location.slice(0, 12) + "..."
+      : event.location;
 
   return (
     <div className="flex md:items-center justify-center pt-5">
@@ -46,6 +55,7 @@ const EventCard = ({ event }: { event: EventProps }) => {
             <div>
               <img src="Pic.png" alt="" />
             </div>
+
             <div className="p-2">
               <div className="flex items-center gap-4">
                 <div className="text-xl">
@@ -58,42 +68,75 @@ const EventCard = ({ event }: { event: EventProps }) => {
                   {event.title}
                 </h3>
               </div>
-              <div>
+              <div className="flex flex-col gap-2">
                 <p className="font-light text-gray-800">
                   We'll get you direct seated and inside for you to enjoy the
                   conference
                 </p>
-                <div className="flex items-center justify-center text-sm gap-2 ">
-                  <div className="flex items-center justify-start gap-2">
+
+                {/* info */}
+                <div className="flex items-center justify-start text-sm gap-2 ">
+                  <div className="flex items-center justify-start gap-1">
                     <div className="text-[#1D4ED8]">
                       <Calendar size={13} />
                     </div>
                     <div>
-                      <p className="text-textSecondary">{dayName}</p>
+                      <p className="text-gray-800 font-light">{dayName}</p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-start gap-2">
+                  <div className="flex items-center justify-start gap-1">
                     <div className="text-[#1D4ED8] ">
                       <Clock size={13} />
                     </div>
                     <div>
-                      <p className="text-textSecondary wrap">
+                      <p className="text-gray-800 font-light text-sm">
                         {startTime} - {endTime}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-start gap-2">
+                  <div className="flex items-center justify-start gap-1">
                     <div className="text-[#1D4ED8] ">
                       <MapPin size={13} />
                     </div>
                     <div>
-                      <p className="text-textSecondary wrap">
-                        {event.location}
+                      <p className="text-gray-800 font-light text-sm wrap">
+                        {shortLocation}
                       </p>
                     </div>
                   </div>
+                </div>
+
+                {/* tags */}
+                <div className="mb-2">
+                  {event.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="inline-block bg-[#DADEFF] text-[#1D4ED8] px-2 rounded-md text-sm mr-1 mb-1"
+                    >
+                      <div className="flex items-center justify-start">
+                        <Dot />
+                        {tag}
+                      </div>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-t-2 border-gray-400 py-2 ">
+                <div className="border-[#bdbbfb3d] flex items-center justify-between">
+                  <div className="flex items-center gap-2 ">
+                    <Armchair color={"#8570AD"} size={20} />
+                    <p className="text-textSecondary text-sm">
+                      {event.available_seats} Spot Left{" "}
+                    </p>
+                  </div>
+
+                  <span className="text-gray-400">
+                    ( {event.total_seats} registered )
+                  </span>
+
                 </div>
               </div>
             </div>
