@@ -42,8 +42,8 @@ const EventCard = ({ event }: { event: EventProps }) => {
   const endTime = format(parse(event.end_time, "HH:mm:ss", new Date()), "hh a");
 
   const shortLocation =
-    event.location.length > 15
-      ? event.location.slice(0, 12) + "..."
+    event.location.length > 10
+      ? event.location.slice(0, 10) + "..."
       : event.location;
 
   return (
@@ -53,10 +53,13 @@ const EventCard = ({ event }: { event: EventProps }) => {
     >
       <div className="[filter:drop-shadow(0_6px_8px_rgba(0,0,0,0.2))] md:w-[25rem] w-[20rem] md:min-h-96">
         <div className="md:min-w-96 min-w-80 md:min-h-96 bg-white [clip-path:polygon(20px_0%,100%_0%,100%_calc(100%-20px),calc(100%-20px)_100%,0%_100%,0%_20px)] ">
-          <div className="">
-            {/* img */}
-            <div>
-              <img src={event.image_path} alt="" className="object-cover" />
+          <div className="h-[30rem] flex flex-col justify-around">
+            <div className="h-48">
+              <img
+                src={event.image_path}
+                alt=""
+                className="w-full h-full object-contain "
+              />
             </div>
 
             <div className="p-2">
@@ -75,7 +78,6 @@ const EventCard = ({ event }: { event: EventProps }) => {
                   conference
                 </p>
 
-                {/* info */}
                 <div className="flex items-center justify-start text-sm gap-2 ">
                   <div className="flex items-center justify-start gap-1">
                     <div className="text-[#1D4ED8]">
@@ -109,7 +111,6 @@ const EventCard = ({ event }: { event: EventProps }) => {
                   </div>
                 </div>
 
-                {/* tags */}
                 <div className="mb-2">
                   {event.tags.map((tag, index) => (
                     <span

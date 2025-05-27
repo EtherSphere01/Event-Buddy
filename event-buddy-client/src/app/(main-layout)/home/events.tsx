@@ -115,7 +115,7 @@ const Events = () => {
 
         {previousEvents.length > 0 && (
           <>
-            <h2 className="text-2xl font-bold text-[#2a235e] mt-10 md:pl-6 ">
+            <h2 className="text-2xl font-bold text-[#2a235e] mt-10 md:pl-6">
               Previous Events
             </h2>
             <div

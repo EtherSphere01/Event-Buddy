@@ -19,7 +19,6 @@ import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
 import { Role } from 'src/role/entities/role.entity';
 
-// @Auth(AuthType.None)
 @Controller('booking')
 export class BookingController {
   constructor(private readonly bookingService: BookingService) {}
@@ -28,7 +27,6 @@ export class BookingController {
   @Post('create')
   create(@Body() createBookingDto: CreateBookingDto, @Request() req) {
     console.log('Request User:', req.user);
-    // console.log(req.headers);
     return this.bookingService.create(createBookingDto, req);
   }
 
@@ -47,7 +45,6 @@ export class BookingController {
   @Roles('Admin', 'User')
   @Get('user/:id')
   findUserBookings(@Param('id') id: string, @Request() req) {
-    // console.log('Request User:', req.user);
     return this.bookingService.findUserBookings(+id);
   }
 

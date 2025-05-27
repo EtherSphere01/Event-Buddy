@@ -66,7 +66,6 @@ export default function SignInForm() {
       })(),
       {
         pending: "Signing in...",
-        // success: "Login successful",
         error: {
           render({ data }: any) {
             return data?.message || data?.toString() || "Login failed";

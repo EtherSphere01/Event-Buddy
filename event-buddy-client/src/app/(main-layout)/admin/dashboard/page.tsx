@@ -112,7 +112,6 @@ const AdminDashboard = () => {
       data.append("tags", JSON.stringify(formData.tags));
 
       if (formData.image instanceof File) {
-        // Upload image first
         const imageData = new FormData();
         imageData.append("image", formData.image);
 
@@ -122,7 +121,6 @@ const AdminDashboard = () => {
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              // ✅ Do not set Content-Type manually for FormData
             },
           }
         );
@@ -146,7 +144,6 @@ const AdminDashboard = () => {
         image_url: data.get("image_url"),
       };
 
-      // Debug formData content
       for (const pair of data.entries()) {
         console.log(`${pair[0]}: ${pair[1]}`);
       }

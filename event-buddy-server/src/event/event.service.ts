@@ -26,7 +26,7 @@ export class EventService {
   async uploadImage(file: Express.Multer.File): Promise<{ imageName: string }> {
     const serverUploadsDir = path.join(__dirname, '..', '..', 'Uploads');
     const clientUploadsDir = path.join(
-      process.cwd(), // event-buddy-server/
+      process.cwd(), 
       '..',
       'event-buddy-client',
       'public',
@@ -56,7 +56,7 @@ export class EventService {
     ): Promise<string> {
       const serverUploadsDir = path.join(__dirname, '..', '..', 'uploads');
       const clientUploadsDir = path.join(
-        process.cwd(), // event-buddy-server/
+        process.cwd(),
         '..',
         'event-buddy-client',
         'public',
@@ -103,7 +103,6 @@ export class EventService {
         throw new BadRequestException('Invalid image format');
       }
 
-      // ✅ ACTUALLY CALL THE FUNCTION
       relativeImagePath = await saveImageToBothLocations(originalImagePath);
     } else if (createEventDto.image_url) {
       relativeImagePath = `/uploads/${createEventDto.image_url}`;

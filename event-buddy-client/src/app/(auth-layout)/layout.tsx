@@ -1,4 +1,3 @@
-// src/app/(auth)/layout.tsx
 "use client";
 import AuthHeader from "@/components/auth-header";
 import SetLoading from "@/components/set-loading";

@@ -46,7 +46,6 @@ export default function MainHeader() {
           <h1 className="text-textPrimary font-bold text-3xl">Event buddy</h1>
         </Link>
 
-        {/* md, lg device */}
         <div className="hidden md:flex items-center gap-4">
           {!user ? (
             <>
@@ -82,7 +81,6 @@ export default function MainHeader() {
           )}
         </div>
 
-        {/* sm device */}
         <div className="md:hidden">
           <button
             onClick={() => setMenuOpen(!menuOpen)}

@@ -109,7 +109,7 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Title */}
+
           <label className="block font-medium text-textPrimary mb-1">
             Title
           </label>
@@ -122,7 +122,6 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
             className="w-full border border-gray-300 rounded-md p-2 mb-3"
           />
 
-          {/* Date & Time */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
             <div>
               <label className="block font-medium text-textPrimary mb-1">
@@ -161,7 +160,6 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
             </div>
           </div>
 
-          {/* Description */}
           <div className="mb-3">
             <label className="block font-medium text-textPrimary mb-1">
               Description
@@ -175,7 +173,6 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
             />
           </div>
 
-          {/* Location, Capacity, Tags */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
             <div>
               <label className="block font-medium text-textPrimary mb-1">
@@ -219,7 +216,6 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
             />
           </div>
 
-          {/* Image Upload */}
           <div className="mb-3">
             <label className="block	va-block font-medium text-textPrimary mb-2">
               Image
@@ -266,7 +262,6 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex justify-end gap-3 pt-4">
             <button type="button" onClick={onClose} className="text-gray-500">
               Cancel
