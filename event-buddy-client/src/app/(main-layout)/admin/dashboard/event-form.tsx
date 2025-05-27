@@ -2,6 +2,7 @@
 
 import { CloudUpload } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 type Event = {
   onClose: () => void;
@@ -54,11 +55,11 @@ const EventForm = ({ onClose, onSubmit, mode, initialData }: Event) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        alert("File size exceeds 5MB limit");
+        toast.error("File size exceeds 5MB limit");
         return;
       }
       if (!["image/jpeg", "image/jpg", "image/png"].includes(file.type)) {
-        alert("Invalid file format. Only JPG, JPEG, or PNG allowed.");
+        toast.error("Invalid file format. Only JPG, JPEG, or PNG allowed.");
         return;
       }
       setFormData((prev) => ({ ...prev, image: file }));

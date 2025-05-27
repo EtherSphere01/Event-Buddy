@@ -23,6 +23,31 @@ export class EventService {
     private readonly bookingRepo: Repository<Booking>,
   ) {}
 
+  async uploadImage(file: Express.Multer.File): Promise<{ imageName: string }> {
+    const serverUploadsDir = path.join(__dirname, '..', '..', 'Uploads');
+    const clientUploadsDir = path.join(
+      process.cwd(), // event-buddy-server/
+      '..',
+      'event-buddy-client',
+      'public',
+      'uploads',
+    );
+    await fs.mkdir(serverUploadsDir, { recursive: true });
+    await fs.mkdir(clientUploadsDir, { recursive: true });
+
+    const ext = path.extname(file.originalname);
+    const fileName = `event_${Date.now()}${ext}`;
+    const serverImagePath = path.join(serverUploadsDir, fileName);
+    const clientImagePath = path.join(clientUploadsDir, fileName);
+
+    await fs.writeFile(serverImagePath, file.buffer);
+    await fs.writeFile(clientImagePath, file.buffer);
+
+    console.log('✅ Image saved to server:', serverImagePath);
+
+    return { imageName: fileName };
+  }
+
   async create(createEventDto: CreateEventDto) {
     let relativeImagePath: string | undefined;
 
@@ -151,7 +176,73 @@ export class EventService {
         throw new NotFoundException(`Event with ID ${id} not found`);
       }
 
-      const updatedEvent = Object.assign(event, updateEventDto);
+      let relativeImagePath: string | undefined;
+
+      async function saveImageToBothLocations(
+        originalImagePath: string,
+      ): Promise<string> {
+        const serverUploadsDir = path.join(__dirname, '..', '..', 'uploads');
+        const clientUploadsDir = path.join(
+          process.cwd(),
+          '..',
+          'event-buddy-client',
+          'public',
+          'uploads',
+        );
+
+        await fs.mkdir(serverUploadsDir, { recursive: true });
+        await fs.mkdir(clientUploadsDir, { recursive: true });
+
+        const ext = path.extname(originalImagePath);
+        const fileName = `event_${Date.now()}${ext}`;
+
+        const serverImagePath = path.join(serverUploadsDir, fileName);
+        const clientImagePath = path.join(clientUploadsDir, fileName);
+
+        await fs.copyFile(originalImagePath, serverImagePath);
+        await fs.copyFile(originalImagePath, clientImagePath);
+
+        console.log('✅ Image copied to server:', serverImagePath);
+        console.log('✅ Image copied to client:', clientImagePath);
+
+        return `/uploads/${fileName}`;
+      }
+
+      if (updateEventDto.image) {
+        const originalImagePath = updateEventDto.image;
+
+        try {
+          await fs.access(originalImagePath);
+        } catch {
+          throw new BadRequestException(
+            'Image file not found at path: ' + originalImagePath,
+          );
+        }
+
+        const imageBuffer = await fs.readFile(originalImagePath);
+        if (imageBuffer.length > 5 * 1024 * 1024) {
+          throw new BadRequestException('Maximum image size is 5MB');
+        }
+
+        if (
+          !['.jpg', '.jpeg', '.png'].includes(path.extname(originalImagePath))
+        ) {
+          throw new BadRequestException('Invalid image format');
+        }
+
+        relativeImagePath = await saveImageToBothLocations(originalImagePath);
+        updateEventDto.image = relativeImagePath;
+      } else if (updateEventDto.image_url) {
+        relativeImagePath = `/uploads/${updateEventDto.image_url}`;
+        updateEventDto.image_url = relativeImagePath;
+      }
+
+      const update = {
+        ...updateEventDto,
+        image_path: relativeImagePath,
+      };
+
+      const updatedEvent = Object.assign(event, update);
       return await this.eventRepository.save(updatedEvent);
     } catch (error) {
       if (error instanceof NotFoundException) {

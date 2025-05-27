@@ -110,32 +110,67 @@ const AdminDashboard = () => {
       data.append("available_seats", formData.available_seats.toString());
       data.append("total_booked", formData.total_booked.toString());
       data.append("tags", JSON.stringify(formData.tags));
+
       if (formData.image instanceof File) {
-        data.append("image", formData.image);
+        // Upload image first
+        const imageData = new FormData();
+        imageData.append("image", formData.image);
+
+        const imageResponse = await axios.post(
+          `${process.env.NEXT_PUBLIC_LOCALHOST}/event/upload-image`,
+          imageData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              // ✅ Do not set Content-Type manually for FormData
+            },
+          }
+        );
+
+        data.append("image_url", imageResponse.data.imageName);
       } else if (formData.image) {
         data.append("image_path", formData.image);
       }
 
+      const payload = {
+        title: formData.title,
+        date: formData.date,
+        start_time: formData.start_time,
+        end_time: formData.end_time,
+        description: formData.description,
+        location: formData.location,
+        total_seats: Number(formData.total_seats),
+        available_seats: Number(formData.available_seats),
+        total_booked: Number(formData.total_booked),
+        tags: formData.tags,
+        image_url: data.get("image_url"),
+      };
+
+      // Debug formData content
+      for (const pair of data.entries()) {
+        console.log(`${pair[0]}: ${pair[1]}`);
+      }
+
       if (editingEvent) {
+        console.log("Creating new event with data:", payload);
         await axios.patch(
           `${process.env.NEXT_PUBLIC_LOCALHOST}/event/update/${editingEvent.event_id}`,
-          data,
+          payload,
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
             },
           }
         );
         toast.success("Event updated!");
       } else {
+        console.log("Creating new event with data:", payload);
         await axios.post(
           `${process.env.NEXT_PUBLIC_LOCALHOST}/event/create`,
-          data,
+          payload,
           {
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "multipart/form-data",
             },
           }
         );

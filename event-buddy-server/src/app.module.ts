@@ -19,6 +19,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { AuthenticationGuard } from './auth/guards/authentication/authentication.guard';
 import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard';
 import { RolesGuard } from './auth/guards/roles/roles.guard';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -32,7 +33,12 @@ import { RolesGuard } from './auth/guards/roles/roles.guard';
     ConfigModule.forRoot(),
 
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [
+        ConfigModule,
+        MulterModule.register({
+          dest: './uploads',
+        }),
+      ],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         type: 'postgres',

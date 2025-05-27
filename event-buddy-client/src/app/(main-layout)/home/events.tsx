@@ -115,12 +115,12 @@ const Events = () => {
 
         {previousEvents.length > 0 && (
           <>
-            <h2 className="text-2xl font-bold text-[#2a235e] mt-10 md:pl-6">
+            <h2 className="text-2xl font-bold text-[#2a235e] mt-10 md:pl-6 ">
               Previous Events
             </h2>
             <div
               ref={previousRef}
-              className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
+              className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:flex md:flex-wrap justify-around"
             >
               {paginatedPrevious.map((event) => (
                 <EventCard key={event.event_id} event={event} />

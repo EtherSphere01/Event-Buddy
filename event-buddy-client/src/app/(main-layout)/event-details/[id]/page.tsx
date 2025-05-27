@@ -153,7 +153,11 @@ const EventDetails = () => {
           <CircleArrowLeft />
           Back to event
         </Link>
-        <img src="/pic.png" alt="" className="w-full rounded-lg mb-5" />
+        <img
+          src={`uploads/${techEvent.image_path}`}
+          alt=""
+          className="w-full rounded-lg mb-5"
+        />
 
         <div className="mb-5">
           {techEvent.tags.map((tag: string, index: number) => (

@@ -8,6 +8,8 @@ import {
   Delete,
   Res,
   HttpStatus,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { EventService } from './event.service';
@@ -16,6 +18,7 @@ import { UpdateEventDto } from './dto/update-event.dto';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('event')
 export class EventController {
@@ -23,6 +26,7 @@ export class EventController {
 
   @Roles('Admin')
   @Post('create')
+  @UseInterceptors(FileInterceptor('image'))
   async create(@Body() createEventDto: CreateEventDto, @Res() res: Response) {
     try {
       const createdEvent = await this.eventService.create(createEventDto);
@@ -33,6 +37,13 @@ export class EventController {
         message: error.message || 'Internal server error',
       });
     }
+  }
+
+  @Roles('Admin')
+  @Post('upload-image')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadImage(@UploadedFile() file: Express.Multer.File) {
+    return await this.eventService.uploadImage(file);
   }
 
   @Auth(AuthType.None)
