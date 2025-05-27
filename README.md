@@ -1,7 +1,9 @@
 # Event Buddy
 
-- **Backend**: See [Backend README](#backend-setup) or the `event-buddy-server/README.md` file.
-- **Frontend**: See [Frontend README](#frontend-setup) or the `event-buddy-client/README.md` file.
+**For Installation:**
+
+- **Backend**: See [Backend README](https://github.com/EtherSphere01/Event-Buddy/tree/main/event-buddy-server#readme) or the `event-buddy-server/README.md` file.
+- **Frontend**: See [Frontend README](https://github.com/EtherSphere01/Event-Buddy/tree/main/event-buddy-client#readme) or the `event-buddy-client/README.md` file.
 
 ## Technology Stack
 
