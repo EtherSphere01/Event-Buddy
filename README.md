@@ -7,7 +7,7 @@
 
 ## ER Diagram
 
-_(`![ER Diagram](./Database/ER%20Diagram.png)`)_
+![ER Diagram](./Database/event_buddy_er_diagram.png)
 
 ## Technology Stack
 
