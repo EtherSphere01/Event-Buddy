@@ -52,11 +52,11 @@ const EventCard = ({ event }: { event: EventProps }) => {
       className="flex md:items-center justify-center  hover:scale-105 transition-transform duration-300"
     >
       <div className="[filter:drop-shadow(0_6px_8px_rgba(0,0,0,0.2))] md:w-[25rem] w-[20rem]">
-        <div className="md:min-w-96 min-w-80 md:min-h-96 bg-white [clip-path:polygon(20px_0%,100%_0%,100%_calc(100%-20px),calc(100%-20px)_100%,0%_100%,0%_20px)] ">
+        <div className="md:min-w-96 min-w-80 h-auto bg-white [clip-path:polygon(20px_0%,100%_0%,100%_calc(100%-20px),calc(100%-20px)_100%,0%_100%,0%_20px)] ">
           <div className="">
             {/* img */}
             <div>
-              <img src="Pic.png" alt="" />
+              <img src={event.image_path} alt="" />
             </div>
 
             <div className="p-2">
