@@ -3,6 +3,8 @@
 import React from "react";
 import { Eye, SquarePen, Trash2 } from "lucide-react";
 import { format, parseISO } from "date-fns";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
 type Event = {
   event: {

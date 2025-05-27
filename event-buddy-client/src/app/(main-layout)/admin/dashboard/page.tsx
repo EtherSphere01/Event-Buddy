@@ -150,6 +150,10 @@ const AdminDashboard = () => {
     }
   };
 
+  const handleEyeClick = (event_id: number) => {
+    router.push(`/event-details/${event_id}`);
+  };
+
   const handleDeleteClick = async (eventId: number) => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -235,7 +239,10 @@ const AdminDashboard = () => {
                     {event.total_seats}
                   </td>
                   <td className="p-3 flex gap-4 justify-center items-center">
-                    <button className="text-textPrimary hover:text-blue-700">
+                    <button
+                      className="text-textPrimary hover:text-blue-700"
+                      onClick={() => handleEyeClick(event.event_id)}
+                    >
                       <Eye size={18} />
                     </button>
                     <button
