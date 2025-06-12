@@ -15,4 +15,3 @@ export default registerAs('jwt', () => {
     ),
   };
 });
-// This configuration registers a JWT configuration object with default values for access and refresh token expiration times.
